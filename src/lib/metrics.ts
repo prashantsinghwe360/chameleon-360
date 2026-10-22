@@ -3,7 +3,7 @@
  * Pages never hard-code client values.
  * ===================================================================== */
 import type {
-  AppUsageRecord, Comparator, DailyRecord, Dataset, Employee, MetricKey,
+  AppUsageRecord, CohortDef, CohortMeasure, CohortRule, Comparator, DailyRecord, Dataset, Employee, MetricKey,
   PeriodKey, PersonMeasure, RedFlagConfig, Threshold,
 } from '../types';
 
@@ -64,6 +64,16 @@ export function makeScope(ds: Dataset, period: PeriodKey): Scope {
   return { ds, range, employees, empById, daily, usage, aiToolOf };
 }
 
+/** Narrow a scope to a subset of people (e.g. one team). */
+export function filterScope(sc: Scope, keep: (e: Employee) => boolean): Scope {
+  const employees = sc.employees.filter(keep);
+  const ids = new Set(employees.map((e) => e.id));
+  return {
+    ...sc, employees, empById: new Map(employees.map((e) => [e.id, e])),
+    daily: sc.daily.filter((d) => ids.has(d.employeeId)), usage: sc.usage.filter((u) => ids.has(u.employeeId)),
+  };
+}
+
 /* --------------------------- person stats --------------------------- */
 export interface MonthSums { present: number; online: number; active: number; productive: number }
 export interface PersonStat {
@@ -78,6 +88,12 @@ export interface PersonStat {
   unproductiveHrs: number;              // from app usage
   topUnproductive: string | null;
   nonWorkHrs: number;
+  /** non-work hours per screened category */
+  nonWorkByCat: Record<string, number>;
+  /** hours per usage category (all categories) */
+  catHrs: Record<string, number>;
+  /** unproductive hours per app / url */
+  unprodItems: Record<string, number>;
   aiHrs: number;
   aiTools: Set<string>;
 }
@@ -91,7 +107,7 @@ export function personStats(sc: Scope): PersonStat[] {
         emp: sc.empById.get(id)!, trackedDays: 0, presentDays: 0, avg: { active: 0, productive: 0, online: 0 },
         sum: { online: 0, active: 0, productive: 0, neutral: 0, unproductive: 0 }, productivePct: 0,
         daysByMetric: { active: [], productive: [], online: [] }, months: {}, unproductiveHrs: 0,
-        topUnproductive: null, nonWorkHrs: 0, aiHrs: 0, aiTools: new Set(),
+        topUnproductive: null, nonWorkHrs: 0, nonWorkByCat: {}, catHrs: {}, unprodItems: {}, aiHrs: 0, aiTools: new Set(),
       };
       map.set(id, p);
     }
@@ -114,10 +130,12 @@ export function personStats(sc: Scope): PersonStat[] {
   for (const u of sc.usage) {
     const p = get(u.employeeId);
     const tool = sc.aiToolOf(u.name);
+    p.catHrs[u.category] = (p.catHrs[u.category] ?? 0) + H(u.activeSec);
     if (tool) { p.aiHrs += H(u.activeSec); p.aiTools.add(tool); }
-    if (nonWork.has(u.category)) p.nonWorkHrs += H(u.activeSec);
+    if (nonWork.has(u.category)) { p.nonWorkHrs += H(u.activeSec); p.nonWorkByCat[u.category] = (p.nonWorkByCat[u.category] ?? 0) + H(u.activeSec); }
     if (u.productivity === 'unproductive') {
       p.unproductiveHrs += H(u.activeSec);
+      p.unprodItems[u.name] = (p.unprodItems[u.name] ?? 0) + H(u.activeSec);
       const m = unprodBy.get(u.employeeId) ?? new Map<string, number>();
       m.set(u.name, (m.get(u.name) ?? 0) + u.activeSec);
       unprodBy.set(u.employeeId, m);
@@ -188,15 +206,17 @@ export interface GroupStat {
   prodPct: number; neutralPct: number; unprodPct: number;
   meeting: number; meetingPct: number;
 }
-export function groupStats(stats: PersonStat[], key: 'department' | 'team', t: Threshold, minSize: number, minDays = 1): GroupStat[] {
+/** Group rows by department, team, or person (one row per person - used when a single team is selected). */
+export type GroupKey = 'department' | 'team' | 'person';
+export function groupStats(stats: PersonStat[], key: GroupKey, t: Threshold, minSize: number, minDays = 1): GroupStat[] {
   const g = new Map<string, PersonStat[]>();
   stats.filter((s) => s.presentDays >= minDays).forEach((s) => {
-    const k = s.emp[key];
+    const k = key === 'person' ? s.emp.name : s.emp[key];
     g.set(k, [...(g.get(k) ?? []), s]);
   });
   const out: GroupStat[] = [];
   for (const [name, list] of g) {
-    if (list.length < minSize) continue;
+    if (key !== 'person' && list.length < minSize) continue;
     let n = 0; const sum = { online: 0, active: 0, productive: 0, neutral: 0, unproductive: 0 };
     list.forEach((s) => { n += s.presentDays; (Object.keys(sum) as (keyof typeof sum)[]).forEach((k) => (sum[k] += s.sum[k])); });
     n ||= 1;
@@ -259,12 +279,14 @@ export function monthlyTrend(sc: Scope, _stats?: PersonStat[]) {
 
 /* ------------------------------ cohorts ------------------------------ */
 export type CohortBy = 'band' | 'ai' | 'department' | 'join';
-export function cohortOf(by: CohortBy, s: PersonStat, bands: { metric: MetricKey; low: number; high: number }, powerCut: number): string {
+type Bands = { metric: MetricKey; low: number; high: number };
+/** Hour-range label for a value, e.g. "Under 3h", "3–6h", "Over 6h". */
+export const bandOf = (v: number, b: Bands) => (v < b.low ? `Under ${b.low}h` : v > b.high ? `Over ${b.high}h` : `${b.low}–${b.high}h`);
+export const bandOrder = (b: Bands) => [`Under ${b.low}h`, `${b.low}–${b.high}h`, `Over ${b.high}h`];
+
+export function cohortOf(by: CohortBy, s: PersonStat, bands: Bands, powerCut: number): string {
   switch (by) {
-    case 'band': {
-      const v = s.avg[bands.metric];
-      return v < bands.low ? `Under ${bands.low}h` : v > bands.high ? `Over ${bands.high}h` : `${bands.low}–${bands.high}h`;
-    }
+    case 'band': return bandOf(s.avg[bands.metric], bands);
     case 'ai': return s.aiHrs === 0 ? 'No AI use' : s.aiHrs >= powerCut ? 'AI power users' : 'Light AI users';
     case 'department': return s.emp.department;
     case 'join': return s.emp.joinDate ? `Joined ${monthLabel(s.emp.joinDate.slice(0, 7), false)} ${s.emp.joinDate.slice(0, 4)}` : 'Join date unknown';
@@ -287,6 +309,110 @@ export function cohortTable(sc: Scope, stats: PersonStat[], by: CohortBy, metric
   rows.sort((a, b) => b.people - a.people);
   return { months, rows };
 }
+
+/**
+ * People per group per month (bar chart). For activity bands each person is placed in the
+ * hour range of THAT month's average, so the bars show how many people sit in each range
+ * month by month. Other groupings count the group's people who were present that month.
+ */
+export function cohortCounts(sc: Scope, stats: PersonStat[], by: CohortBy, bands: Bands, powerCut: number, groups: string[]) {
+  const months = monthsIn(sc);
+  return months.map((m) => {
+    const row: Record<string, string | number> = { month: m.label };
+    groups.forEach((g) => (row[g] = 0));
+    stats.forEach((s) => {
+      const x = s.months[m.key];
+      if (!x || !x.present) return;
+      const g = by === 'band' ? bandOf(x[bands.metric] / 3600 / x.present, bands) : cohortOf(by, s, bands, powerCut);
+      if (g in row) row[g] = (row[g] as number) + 1;
+    });
+    return row;
+  });
+}
+
+/* ------------------------------ time & capacity ------------------------------ */
+export interface CapacityRow {
+  name: string; people: number; presentDays: number;
+  /** average hours per present day */
+  span: number; online: number; active: number; productive: number;
+  /** headcount needed if everyone worked `dayHours` a day, on each basis */
+  fteActive: number; fteSpan: number;
+  utilisation: number; // active / span, %
+}
+/**
+ * Capacity lens (deck slide 17): total recorded hours divided by a standard day x working days.
+ * Active basis = smallest team that could do the screen work; span basis = largest team the
+ * punch-in-to-out time could need. Span falls back to online time when the ledger has no span.
+ */
+export function capacity(sc: Scope, dayHours: number, key: GroupKey | null = null): CapacityRow[] {
+  const wd = Math.max(1, sc.range.workingDays);
+  const groups = new Map<string, { ids: Set<string>; n: number; span: number; online: number; active: number; productive: number }>();
+  for (const d of sc.daily) {
+    if (!d.present) continue;
+    const e = sc.empById.get(d.employeeId); if (!e) continue;
+    const k = key === 'person' ? e.name : key ? e[key] : 'All';
+    const g = groups.get(k) ?? { ids: new Set<string>(), n: 0, span: 0, online: 0, active: 0, productive: 0 };
+    g.ids.add(d.employeeId); g.n++;
+    g.span += d.spanSec ?? d.onlineSec; g.online += d.onlineSec; g.active += d.activeSec; g.productive += d.productiveSec;
+    groups.set(k, g);
+  }
+  return [...groups.entries()].map(([name, g]) => {
+    const n = g.n || 1;
+    return {
+      name, people: g.ids.size, presentDays: g.n,
+      span: H(g.span) / n, online: H(g.online) / n, active: H(g.active) / n, productive: H(g.productive) / n,
+      fteActive: H(g.active) / (dayHours * wd), fteSpan: H(g.span) / (dayHours * wd),
+      utilisation: g.span ? (g.active / g.span) * 100 : 0,
+    };
+  });
+}
+
+/* ------------------------------ custom cohorts ------------------------------ */
+export const COHORT_MEASURES: { value: CohortMeasure; label: string; unit: string }[] = [
+  { value: 'active', label: 'Active time / day', unit: 'h' },
+  { value: 'productive', label: 'Productive time / day', unit: 'h' },
+  { value: 'online', label: 'Online time / day', unit: 'h' },
+  { value: 'idle', label: 'Idle time / day', unit: 'h' },
+  { value: 'category', label: 'Category usage (period)', unit: 'h' },
+  { value: 'unproductiveHrs', label: 'All unproductive usage (period)', unit: 'h' },
+  { value: 'nonWorkHrs', label: 'All non-work usage (period)', unit: 'h' },
+  { value: 'aiHrs', label: 'AI tool usage (period)', unit: 'h' },
+  { value: 'productivePct', label: 'Productive share of active', unit: '%' },
+  { value: 'presentDays', label: 'Present days', unit: 'd' },
+];
+export const cohortMeasureLabel = (m: CohortMeasure) => COHORT_MEASURES.find((x) => x.value === m)!;
+
+export function cohortValue(p: PersonStat, r: CohortRule): number {
+  switch (r.measure) {
+    case 'active': case 'productive': case 'online': return p.avg[r.measure];
+    case 'idle': return Math.max(0, p.avg.online - p.avg.active);
+    case 'category': return r.category ? p.catHrs[r.category] ?? 0 : 0;
+    case 'unproductiveHrs': return p.unproductiveHrs;
+    case 'nonWorkHrs': return p.nonWorkHrs;
+    case 'aiHrs': return p.aiHrs;
+    case 'productivePct': return p.productivePct;
+    case 'presentDays': return p.presentDays;
+  }
+}
+export function ruleMatches(p: PersonStat, r: CohortRule): boolean {
+  const v = cohortValue(p, r);
+  if (r.mode === 'min') return v >= (r.min ?? 0);
+  if (r.mode === 'max') return v <= (r.max ?? Infinity);
+  return v >= (r.min ?? -Infinity) && v <= (r.max ?? Infinity);
+}
+export function cohortMembers(stats: PersonStat[], c: CohortDef): PersonStat[] {
+  if (!c.rules.length) return [];
+  return stats.filter((p) => (c.combine === 'all' ? c.rules.every((r) => ruleMatches(p, r)) : c.rules.some((r) => ruleMatches(p, r))));
+}
+export function ruleText(r: CohortRule): string {
+  const m = cohortMeasureLabel(r.measure);
+  const what = r.measure === 'category' ? `${r.category ?? 'category'} usage` : m.label.replace(' (period)', '').toLowerCase();
+  const u = m.unit;
+  if (r.mode === 'min') return `${what} ≥ ${r.min ?? 0}${u}`;
+  if (r.mode === 'max') return `${what} ≤ ${r.max ?? 0}${u}`;
+  return `${what} ${r.min ?? 0}–${r.max ?? 0}${u}`;
+}
+export const cohortText = (c: CohortDef) => c.rules.map(ruleText).join(c.combine === 'all' ? ' and ' : ' or ') || 'no rules yet';
 
 /* ------------------------------ apps & urls ------------------------------ */
 export function topItems(sc: Scope, opts: { kind?: 'app' | 'url'; productivity?: string; exclude?: string[]; n: number; categories?: string[] }) {
@@ -335,6 +461,8 @@ export function aiAdoption(sc: Scope, stats: PersonStat[]) {
   const nonHub = stats.filter((s) => [...s.aiTools].some((t) => t !== hub));
   const byTool = new Map<string, number>();
   adopters.forEach((s) => s.aiTools.forEach((t) => byTool.set(t, (byTool.get(t) ?? 0) + 1)));
+  const toolHrs = new Map<string, number>();
+  sc.usage.forEach((u) => { const t = sc.aiToolOf(u.name); if (t) toolHrs.set(t, (toolHrs.get(t) ?? 0) + H(u.activeSec)); });
   const totalHrs = adopters.reduce((a, s) => a + s.aiHrs, 0);
   const months = monthsIn(sc);
   const monthly = months.map((m) => ({ month: m.label, partial: m.partial, hours: 0, users: new Set<string>() }));
@@ -348,7 +476,7 @@ export function aiAdoption(sc: Scope, stats: PersonStat[]) {
   return {
     people: stats.length, adopters: adopters.length, adoptionPct: stats.length ? (adopters.length / stats.length) * 100 : 0,
     nonHubPct: stats.length ? (nonHub.length / stats.length) * 100 : 0,
-    byTool: [...byTool.entries()].map(([tool, users]) => ({ tool, users })).sort((a, b) => b.users - a.users),
+    byTool: [...byTool.entries()].map(([tool, users]) => ({ tool, users, hours: +(toolHrs.get(tool) ?? 0).toFixed(1) })).sort((a, b) => b.users - a.users),
     totalHrs, perUserPerMonth: adopters.length ? totalHrs / adopters.length / nMonths : 0,
     monthly: monthly.map((m) => ({ month: m.month, partial: m.partial, hours: +m.hours.toFixed(1), users: m.users.size })),
   };

@@ -1,8 +1,10 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { ArrowDown, ArrowUp, ChevronRight } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowUp, ChevronDown, ChevronRight } from 'lucide-react';
 import type { Comparator, MetricKey, Threshold } from '../types';
 import { METRIC_LABEL } from '../lib/metrics';
-import { useDash, type PageKey } from '../state';
+import { useDash } from '../state';
+import type { Insight, InsightTone } from '../types';
+import { analytics, family, seriesPalette, slate, wellness } from '../theme/tokens';
 
 /* ------------------------------ layout ------------------------------ */
 export function PageHeader({ title, lede, children }: { title: string; lede: string; children?: ReactNode }) {
@@ -17,46 +19,95 @@ export function PageHeader({ title, lede, children }: { title: string; lede: str
   );
 }
 
-export function Section({ id, title, note, tools, children, span = 12 }: {
+export function Section({ id, title, note, tools, children, span = 12, onOpen, wholeCardOpens }: {
   id?: string; title: string; note?: ReactNode; tools?: ReactNode; children: ReactNode; span?: 4 | 5 | 6 | 7 | 8 | 12;
+  /** adds a "Show details" button that opens the full-page detail view */
+  onOpen?: () => void;
+  /** clicking anywhere on the card body opens the detail view too */
+  wholeCardOpens?: boolean;
 }) {
+  const bodyProps = wholeCardOpens && onOpen ? {
+    role: 'button' as const, tabIndex: 0, onClick: onOpen,
+    onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); } },
+    'aria-label': `${title}: show details`,
+  } : {};
   return (
-    <section id={id} className={`card span-${span}`}>
+    <section id={id} className={`card span-${span} ${wholeCardOpens && onOpen ? 'card-clickable' : ''}`}>
       <div className="card-head">
         <h2>{title}</h2>
-        {tools && <div className="card-tools">{tools}</div>}
+        {(tools || onOpen) && (
+          <div className="card-tools">
+            {tools}
+            {onOpen && <button className="detail-link" onClick={onOpen}>Show details <ChevronRight size={14} aria-hidden /></button>}
+          </div>
+        )}
       </div>
-      <div className="card-body">{children}</div>
+      <div className="card-body" {...bodyProps}>{children}</div>
       {note && <p className="card-note">{note}</p>}
     </section>
   );
 }
 
+/** Header for a full-page detail view, with a Back button to where the user came from. */
+export function DetailHeader({ title, lede, children }: { title: string; lede?: string; children?: ReactNode }) {
+  const { back, backLabel, canGoBack } = useDash();
+  return (
+    <>
+      {canGoBack && (
+        <button className="back-btn" onClick={back}><ArrowLeft size={16} aria-hidden /> Back to {backLabel}</button>
+      )}
+      <PageHeader title={title} lede={lede ?? ''}>{children}</PageHeader>
+    </>
+  );
+}
+
 /* ------------------------------ insights ------------------------------ */
-export type InsightTone = 'priority' | 'opportunity' | 'maintain';
-export interface Insight { tone: InsightTone; title: string; body: string; link?: { page: PageKey; anchor: string } }
+export type { Insight, InsightTone } from '../types';
 const TONE_LABEL: Record<InsightTone, string> = { priority: 'Act now', opportunity: 'Opportunity', maintain: 'Keep as is' };
 
-export function InsightPanel({ items, title = 'Decisions this page supports' }: { items: Insight[]; title?: string }) {
+export function InsightPanel({ items, title = 'Decisions this page supports', defaultOpen = false }: { items: Insight[]; title?: string; defaultOpen?: boolean }) {
   const { go } = useDash();
+  const [open, setOpen] = useState(defaultOpen);
   if (!items.length) return null;
+  const counts = (Object.keys(TONE_LABEL) as InsightTone[])
+    .map((t) => ({ t, n: items.filter((i) => i.tone === t).length }))
+    .filter((c) => c.n > 0);
   return (
-    <section className="insights" aria-label={title}>
-      <h2>{title}</h2>
-      <ol>
-        {items.map((it, i) => (
-          <li key={i} className={`insight tone-${it.tone}`}>
-            <span className="insight-tag">{TONE_LABEL[it.tone]}</span>
-            <strong>{it.title}</strong>
-            <p>{it.body}</p>
-            {it.link && (
-              <button className="insight-link" onClick={() => go(it.link!.page, it.link!.anchor)}>
-                See the data <ChevronRight size={14} aria-hidden />
-              </button>
-            )}
-          </li>
-        ))}
-      </ol>
+    <section className={`insights ${open ? 'open' : ''}`} aria-label={title}>
+      <button className="insights-toggle" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        <h2>{title}</h2>
+        {!open && (
+          <>
+            <span className="insights-counts">
+              {counts.map((c) => <span key={c.t} className={`insight-tag tag-${c.t}`}>{c.n} {TONE_LABEL[c.t].toLowerCase()}</span>)}
+            </span>
+            <span className="insights-peek">{items[0].title}{items.length > 1 ? ` and ${items.length - 1} more` : ''}</span>
+          </>
+        )}
+        <ChevronDown size={18} aria-hidden className="insights-chevron" />
+      </button>
+      {open && (
+        <ol className="insight-rows">
+          {items.map((it, i) => (
+            <li key={it.id ?? i} className={`insight-row tone-${it.tone}`}>
+              <span className="insight-tag">{TONE_LABEL[it.tone]}</span>
+              <div className="insight-text">
+                <strong>{it.title}</strong>
+                <p>{it.body}</p>
+              </div>
+              <div className="insight-side">
+                {it.metric && (
+                  <div className="insight-metric">
+                    <span className="insight-metric-value">{it.metric.value}</span>
+                    <span className="insight-metric-label">{it.metric.label}</span>
+                  </div>
+                )}
+                {it.link && <button className="btn-bordered" onClick={() => go(it.link!.page, it.link!.anchor)}>See evidence</button>}
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
   );
 }
@@ -177,8 +228,20 @@ export function Stat({ value, label }: { value: string; label: string }) {
   return <div className="stat"><span className="stat-value">{value}</span><span className="stat-label">{label}</span></div>;
 }
 
+/** Semantic chart colours, all taken from the design tokens. */
 export const CHART = {
-  navy: '#1E2761', navySoft: '#8D96C9', orange: '#E8734A', green: '#2E9E6B', red: '#C0392B', grey: '#B9BFCC', yellow: '#F5B800',
-  grid: '#E4E7EF', axis: '#5B6270',
+  ...analytics,                              // working, online, active, idle, productive, unproductive, neutral, manual
+  under: wellness.underutilised,             // threshold lines, under-utilised counts, red flags
+  healthy: wellness.healthy,
+  over: wellness.overburdened,
+  ai: family.lavender.base,
+  aiLine: family.cyan.base,
+  present: family.green.base,
+  missing: slate[200],
+  misTag: family.amber.base,                 // unproductive item that is probably a work tool
+  nonWork: family.brinkRed.base,
+  grid: slate[100],
+  axis: slate[500],
 };
-export const axisProps = { tick: { fill: CHART.axis, fontSize: 12 }, axisLine: { stroke: CHART.grid }, tickLine: false } as const;
+export { seriesPalette };
+export const axisProps = { tick: { fill: CHART.axis, fontSize: 12, fontFamily: 'Lato, sans-serif' }, axisLine: { stroke: CHART.grid }, tickLine: false } as const;

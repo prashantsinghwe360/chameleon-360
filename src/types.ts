@@ -81,6 +81,11 @@ export interface ClientConfig {
     bands: { metric: MetricKey; low: number; high: number }; // wellness bands
     leaderCount: number;              // top / bottom N teams
     aiPowerUserCount: number;
+    /** daily capacity benchmark: hours per present day on a metric, +/- variance % = healthy band */
+    capacity: CapacityConfig;
+    insightRules: InsightRulesConfig;
+    /** cohorts available out of the box; users can add, edit and delete in the Cohorts tab */
+    cohorts: CohortDef[];
   };
   /** Label for the unassigned department, if the client has one. */
   unassignedDepartment?: string;
@@ -121,6 +126,82 @@ export interface RedFlagConfig {
 }
 
 export type PeriodKey = '1m' | '3m' | '6m' | '1y';
+
+export type PageKey = 'overview' | 'teams' | 'capacity' | 'cohorts' | 'ai' | 'apps' | 'data';
+
+/* ------------------------------ insights ------------------------------ */
+export type InsightTone = 'priority' | 'opportunity' | 'maintain';
+export interface Insight {
+  /** stable rule id, e.g. 'act.mapping' */
+  id?: string;
+  tone: InsightTone;
+  title: string;
+  body: string;
+  link?: { page: PageKey; anchor: string };
+  /** headline number shown on the right of the row, e.g. { value: '5,491h', label: 'spent so far' } */
+  metric?: { value: string; label: string };
+  /** pages this insight is shown on (Overview shows only 'priority') */
+  pages?: PageKey[];
+}
+
+/** Thresholds for the decision rules. Every number is editable per client. */
+export interface InsightRulesConfig {
+  // Act now
+  mappingHrsPerDay: number;          // unproductive work-tool item used > N h per working day
+  lowActiveHrs: number;              // people averaging active < N h/day
+  lowOnlineHrs: number;              // presence gap: online < N h on a present day ...
+  lowOnlineMinDays: number;          // ... on at least N days
+  neutralHrs: number;                // team neutral > N h/day and productive < neutral
+  underBandSharePct: number;         // underutilised people > N% of headcount
+  severeCategories: string[];        // any time in these = act now
+  // Opportunity
+  leisureCategories: string[];       // video / social
+  leisureMinHrs: number;             // leisure between min ...
+  leisureMaxHrs: number;             // ... and max h per present day
+  aiMaxHrs: number;                  // AI use > 0 and < N h per present day
+  healthySharePct: number;           // healthy people < N% of headcount
+  lowProductiveHrs: number;          // productive < N h/day ...
+  minOnlineHrs: number;              // ... while online > N h/day
+  overDaysSharePct: number;          // overburdened on > N% of present days
+  minPresentDaysForDayShare: number; // ... with more than N present days
+  // Keep as is
+  leisureKeepHrs: number;            // total leisure hours < N in the period
+  overDaysKeepRangePct: [number, number];
+  monthlyChangePct: number;          // month-on-month change below N%
+  unproductiveSharePct: number;      // unproductive time < N% of tracked time
+}
+
+/** Daily capacity benchmark: hours per present day on a metric, +/- variance % = healthy band. */
+export interface CapacityConfig { metric: MetricKey; benchmark: number; variancePct: number }
+
+/* ------------------------------ custom cohorts ------------------------------ */
+
+/** What a cohort rule can test. Time metrics are hours per present day; usage is hours in the period. */
+export type CohortMeasure =
+  | 'active' | 'productive' | 'online' | 'idle'   // hrs / present day (idle = online - active)
+  | 'category'                                      // hrs in a chosen app/website category
+  | 'unproductiveHrs' | 'nonWorkHrs' | 'aiHrs'      // hrs in the period
+  | 'productivePct' | 'presentDays';
+
+export interface CohortRule {
+  id: string;
+  measure: CohortMeasure;
+  /** only for measure 'category' */
+  category?: string;
+  mode: 'min' | 'max' | 'range';   // at least / at most / between
+  min?: number;
+  max?: number;
+}
+
+/** A named, rule-based group of people, e.g. "Red flag" or "Idle-heavy". */
+export interface CohortDef {
+  id: string;
+  name: string;
+  color: string;
+  combine: 'all' | 'any';
+  rules: CohortRule[];
+  description?: string;
+}
 
 export interface Dataset {
   config: ClientConfig;

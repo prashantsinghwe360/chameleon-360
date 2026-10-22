@@ -42,5 +42,62 @@ export const clientConfig: ClientConfig = {
     bands: { metric: 'active', low: 3, high: 6 },
     leaderCount: 5,
     aiPowerUserCount: 10,
+    capacity: { metric: 'online', benchmark: 7, variancePct: 10 },
+    insightRules: {
+      mappingHrsPerDay: 1,
+      lowActiveHrs: 2,
+      lowOnlineHrs: 1,
+      lowOnlineMinDays: 3,
+      neutralHrs: 2,
+      underBandSharePct: 50,
+      severeCategories: ['Gaming', 'Adult', 'Gambling'],
+      leisureCategories: ['Video / streaming', 'Social media'],
+      leisureMinHrs: 1,
+      leisureMaxHrs: 3,
+      aiMaxHrs: 1,
+      healthySharePct: 50,
+      lowProductiveHrs: 3,
+      minOnlineHrs: 3,
+      overDaysSharePct: 50,
+      minPresentDaysForDayShare: 7,
+      leisureKeepHrs: 10,
+      overDaysKeepRangePct: [30, 50],
+      monthlyChangePct: 20,
+      unproductiveSharePct: 5,
+    },
+    cohorts: [
+      {
+        id: 'c-redflag', name: 'Red flag', color: '#EF4444', combine: 'all',
+        description: 'Sustained very low activity over a meaningful number of days',
+        rules: [
+          { id: 'r1', measure: 'active', mode: 'max', max: 2 },
+          { id: 'r2', measure: 'presentDays', mode: 'min', min: 50 },
+        ],
+      },
+      {
+        id: 'c-idle', name: 'Idle-heavy', color: '#F59E0C', combine: 'all',
+        description: 'Logged in for long stretches with little keyboard or mouse activity',
+        rules: [
+          { id: 'r1', measure: 'idle', mode: 'range', min: 5, max: 12 },
+          { id: 'r2', measure: 'active', mode: 'max', max: 3 },
+        ],
+      },
+      {
+        id: 'c-nonwork', name: 'Non-work users', color: '#FF5777', combine: 'any',
+        description: 'Noticeable time on gaming or video / streaming',
+        rules: [
+          { id: 'r1', measure: 'category', category: 'Gaming', mode: 'min', min: 5 },
+          { id: 'r2', measure: 'category', category: 'Video / streaming', mode: 'min', min: 10 },
+        ],
+      },
+      {
+        id: 'c-healthy', name: 'Healthy & productive', color: '#15B8A6', combine: 'all',
+        description: 'In the healthy activity band with a high productive share',
+        rules: [
+          { id: 'r1', measure: 'active', mode: 'range', min: 3, max: 6 },
+          { id: 'r2', measure: 'productivePct', mode: 'min', min: 85 },
+        ],
+      },
+    ],
   },
 };

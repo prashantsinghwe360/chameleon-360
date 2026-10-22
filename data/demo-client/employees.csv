@@ -1,0 +1,468 @@
+Employee ID,Name,Department,Team,Designation,Joining Date,Excluded
+E0001,Alexander Panganiban,MSO,MSO - Applications,,2026-03-17,No
+E0002,Shashank Kulkarni,MSO,MSO - Applications,,2026-03-17,No
+E0003,Mai Le,MSO,MSO - Applications,,2026-03-17,No
+E0004,Wei Ong,MSO,MSO - Applications,,2026-03-17,No
+E0005,Naveen Sharma,MSO,MSO - Applications,,2026-03-17,No
+E0006,Lakshmi Patel,MSO,MSO - Applications,,2026-03-17,No
+E0007,Gopal Pillai,MSO,MSO - Applications,,2026-03-17,No
+E0008,Lakshmi Pillai,MSO,MSO - Applications,,2026-03-17,No
+E0009,Arjun Tan,MSO,MSO - Applications,,2026-06-15,No
+E0010,Thanh Bose,MSO,MSO - Applications,,2026-03-17,No
+E0011,Jia Pham,MSO,MSO - Applications,,2026-03-17,No
+E0012,Imran Kumar,MSO,MSO - Applications,,2026-03-17,No
+E0013,Farid Das,MSO,MSO - Applications,,2026-03-17,No
+E0014,Imran Krishnan,MSO,MSO - Applications,,2026-03-17,No
+E0015,Hafiz Rao,MSO,MSO - Applications,,2026-03-17,No
+E0016,Divya Patel,MSO,MSO - Applications,,2026-03-17,No
+E0017,Mohan Lim,Managed Services,Managed Services,,2026-03-17,No
+E0018,Bharath Raj,Managed Services,Managed Services,,2026-03-17,No
+E0019,Gopal Iyer,Managed Services,Managed Services,,2026-05-11,No
+E0020,Ravi Patel,Managed Services,Managed Services,,2026-03-17,No
+E0021,Shreya Reddy,Managed Services,Managed Services,,2026-03-17,No
+E0022,Ravi Wong,Managed Services,Managed Services,,2026-03-17,No
+E0023,Suresh Das,Managed Services,Managed Services,,2026-03-17,No
+E0024,Aarav Bose,Managed Services,Managed Services,,2026-03-17,No
+E0025,Imran Joshi,Managed Services,Managed Services,,2026-03-17,No
+E0026,Chen Singh,Managed Services,Managed Services,,2026-03-17,No
+E0027,Naveen Chua,Managed Services,Managed Services,,2026-05-15,No
+E0028,Ahmad Syamil,MSO,MSO - Monitoring,,2026-03-17,No
+E0029,Meera Gupta,MSO,MSO - Monitoring,,2026-03-17,No
+E0030,Kiran Ong,MSO,MSO - Monitoring,,2026-03-17,No
+E0031,Bharath Reddy,MSO,MSO - Monitoring,,2026-03-17,No
+E0032,Arjun Mohan,MSO,MSO - Monitoring,,2026-03-17,No
+E0033,Priya Le,MSO,MSO - Monitoring,,2026-03-17,No
+E0034,Tanvi Lim,MSO,MSO - Monitoring,,2026-03-17,No
+E0035,Kavya Iyer,MSO,MSO - Monitoring,,2026-03-17,No
+E0036,Deepa Singh,MSO,MSO - Monitoring,,2026-03-17,No
+E0037,Sara Rahman,MSO,MSO - Monitoring,,2026-03-17,No
+E0038,Lakshmi Das,MSO,MSO - Monitoring,,2026-03-17,No
+E0039,Gopal Menon,MSO,MSO - Monitoring,,2026-03-17,No
+E0040,Minh Wong,MSO,MSO - Monitoring,,2026-03-17,No
+E0041,Zainab Singh,MSO,MSO - Monitoring,,2026-03-17,No
+E0042,Imran Gupta,MSO,MSO - Monitoring,,2026-03-17,No
+E0043,Kavya Joshi,MSO,MSO - Monitoring,,2026-03-17,No
+E0044,Nadia Nguyen,MSO,MSO - Monitoring,,2026-03-17,No
+E0045,Vijayaraj Rangasamy,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0046,Shreya Bose,MSO,MSO - Infra & AIOps,,2026-06-10,No
+E0047,Arjun Raj,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0048,Suresh Rahman,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0049,Aditi Pillai,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0050,Nur Hassan,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0051,Yusuf Nair,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0052,Anita Tan,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0053,Wei Abdullah,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0054,Pooja Le,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0055,Kiran Le,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0056,Priya Hassan,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0057,Tanvi Rao,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0058,Hafiz Rahman,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0059,Joel Tan,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0060,Bharath Tran,MSO,MSO - Infra & AIOps,,2026-03-17,No
+E0061,Safurah Bee,People & Culture,People & Culture,,2026-03-17,No
+E0062,Priyalatha Satiaceelan,People & Culture,People & Culture,,2026-03-17,No
+E0063,Jia Lim,People & Culture,People & Culture,,2026-03-17,No
+E0064,Joel Mohan,People & Culture,People & Culture,,2026-03-17,No
+E0065,Mohan Abdullah,People & Culture,People & Culture,,2026-03-17,No
+E0066,Isha Lim,People & Culture,People & Culture,,2026-03-17,No
+E0067,Kavya Ibrahim,People & Culture,People & Culture,,2026-03-17,No
+E0068,Faizal Sharma,People & Culture,People & Culture,,2026-03-17,No
+E0069,Farid Lim,People & Culture,People & Culture,,2026-03-17,No
+E0070,Rajesh Kumar,People & Culture,People & Culture,,2026-03-17,No
+E0071,Arjun Rao,People & Culture,People & Culture,,2026-03-17,No
+E0072,Meera Pillai,People & Culture,People & Culture,,2026-03-17,No
+E0073,Gaurav Bhargava,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0074,Faizal Hassan,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0075,Gopal Rao,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0076,Minh Pillai,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0077,Ain Lim,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0078,Anita Rahman,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0079,Kavya Krishnan,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0080,Bao Das,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0081,Aditi Wong,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0082,Shreya Kumar,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0083,Joel Nair,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0084,Nadia Joshi,GCC Data AI Presales,GCC Data AI Presales,,2026-03-17,No
+E0085,Nikhithareddy Mandala,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0086,Suresh Patel,Salesforce Practice,Salesforce Practice,,2026-08-12,No
+E0087,Tanvi Tan,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0088,Sanjay Kumar,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0089,Suresh Le,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0090,Rahul Lim,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0091,Priya Bose,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0092,Meera Lim,Salesforce Practice,Salesforce Practice,,2026-06-12,No
+E0093,Bao Nair,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0094,Siva Reddy,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0095,Hafiz Lim,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0096,Aditi Tran,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0097,Ain Singh,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0098,Hana Kumar,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0099,Minh Lim,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0100,Sara Abdullah,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0101,Sneha Ibrahim,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0102,Tanvi Le,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0103,Tanvi Sharma,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0104,Mohan Menon,Salesforce Practice,Salesforce Practice,,2026-08-18,No
+E0105,Yusuf Le,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0106,Anita Rao,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0107,Arjun Wong,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0108,Isha Raj,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0109,Meera Bose,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0110,Nadia Tan,Salesforce Practice,Salesforce Practice,,2026-05-29,No
+E0111,Jia Wong,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0112,Yusuf Menon,Salesforce Practice,Salesforce Practice,,2026-07-10,No
+E0113,Ravi Menon,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0114,Sara Wong,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0115,Deepa Kumar,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0116,Farid Reddy,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0117,Shreya Le,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0118,Ravi Pham,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0119,Bao Lim,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0120,Bao Wong,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0121,Ain Nguyen,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0122,Ravi Rahman,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0123,Rajesh Abdullah,Salesforce Practice,Salesforce Practice,,2026-05-08,No
+E0124,Mohan Ong,Salesforce Practice,Salesforce Practice,,2026-03-17,No
+E0125,Thuy Pham Thi Thanh,Default,Default,,2026-03-17,No
+E0126,Farah Dayana,Default,Default,,2026-03-17,No
+E0127,Thanh Reddy,Default,Default,,2026-03-17,No
+E0128,Bao Le,Default,Default,,2026-03-17,No
+E0129,Farid Nguyen,Default,Default,,2026-03-17,No
+E0130,Rajesh Tan,Default,Default,,2026-08-06,No
+E0131,Karthik Sharma,Default,Default,,2026-03-17,No
+E0132,Lakshmi Chua,Default,Default,,2026-03-17,No
+E0133,Aarav Ibrahim,Default,Default,,2026-03-17,No
+E0134,Hana Sharma,Default,Default,,2026-03-17,No
+E0135,Mohan Pillai,Default,Default,,2026-03-17,No
+E0136,Mohan Iyer,Default,Default,,2026-03-17,No
+E0137,Mohan Singh,Default,Default,,2026-05-18,No
+E0138,Meera Hassan,Default,Default,,2026-03-17,No
+E0139,Rohan Pillai,Default,Default,,2026-03-17,No
+E0140,Kavya Reddy,Default,Default,,2026-03-17,No
+E0141,Rajesh Singh,Default,Default,,2026-03-17,No
+E0142,Siva Krishnan,Default,Default,,2026-03-17,No
+E0143,Jia Reddy,Default,Default,,2026-03-17,No
+E0144,Imran Pillai,Default,Default,,2026-03-17,No
+E0145,Kiran Gupta,Default,Default,,2026-03-17,No
+E0146,Gopal Tan,Default,Default,,2026-03-17,No
+E0147,Anita Le,Default,Default,,2026-03-17,No
+E0148,Kavya Singh,Default,Default,,2026-03-17,No
+E0149,Gopal Reddy,Default,Default,,2026-03-17,No
+E0150,Joel Das,Default,Default,,2026-03-17,No
+E0151,Bharath Menon,Default,Default,,2026-03-17,No
+E0152,Shreya Patel,Default,Default,,2026-03-17,No
+E0153,Farid Le,Default,Default,,2026-03-17,No
+E0154,Hafiz Nair,Default,Default,,2026-03-17,No
+E0155,Sara Joshi,Default,Default,,2026-03-17,No
+E0156,Sanjay Wong,Default,Default,,2026-03-17,No
+E0157,Naveen Rahman,Default,Default,,2026-03-17,No
+E0158,Mai Nguyen,Default,Default,,2026-03-17,No
+E0159,Chen Pillai,Default,Default,,2026-03-17,No
+E0160,Pooja Tran,Default,Default,,2026-03-17,No
+E0161,Minh Singh,Default,Default,,2026-03-17,No
+E0162,Wei Mohan,Default,Default,,2026-03-17,No
+E0163,Aditi Le,Default,Default,,2026-03-17,No
+E0164,Naveen Ong,Default,Default,,2026-03-17,No
+E0165,Ain Bose,Default,Default,,2026-03-17,No
+E0166,Mai Abdullah,Default,Default,,2026-03-17,No
+E0167,Hafiz Bose,Default,Default,,2026-07-27,No
+E0168,Joel Menon,Default,Default,,2026-03-17,No
+E0169,Pooja Sharma,Default,Default,,2026-03-17,No
+E0170,Suresh Rao,Default,Default,,2026-03-17,No
+E0171,Nadia Pillai,Default,Default,,2026-03-17,No
+E0172,Aditi Chua,Default,Default,,2026-03-17,No
+E0173,Sneha Ong,Default,Default,,2026-03-17,No
+E0174,Faizal Lim,Default,Default,,2026-03-17,No
+E0175,Kiran Kumar,Default,Default,,2026-03-17,No
+E0176,Minh Iyer,Default,Default,,2026-03-17,No
+E0177,Kavya Pillai,Default,Default,,2026-03-17,No
+E0178,Tanvi Gupta,Default,Default,,2026-03-17,No
+E0179,Minh Nair,Default,Default,,2026-06-30,No
+E0180,Hana Rahman,Default,Default,,2026-03-17,No
+E0181,Faizal Tran,Default,Default,,2026-03-17,No
+E0182,Ravibv,Finance & Compliance,Finance & Compliance,,2026-03-17,No
+E0183,Nursyara Danila,Finance & Compliance,Finance & Compliance,,2026-03-17,No
+E0184,Siti Fatimah Zahra,Finance & Compliance,Finance & Compliance,,2026-03-17,No
+E0185,Vasanthan Sinnappan,Finance & Compliance,Finance & Compliance,,2026-03-17,No
+E0186,Anita Gupta,Finance & Compliance,Finance & Compliance,,2026-03-17,No
+E0187,Suresh Iyer,Finance & Compliance,Finance & Compliance,,2026-03-17,No
+E0188,Bao Kumar,Finance & Compliance,Finance & Compliance,,2026-03-17,No
+E0189,Kiran Singh,Finance & Compliance,Finance & Compliance,,2026-03-17,No
+E0190,Nhat Nguyen,TCoE,TCoE,,2026-03-17,No
+E0191,Rakshita Kulkarni,TCoE,TCoE,,2026-03-17,No
+E0192,Phuong Vo,TCoE,TCoE,,2026-03-17,No
+E0193,Modium Harshavardhini,TCoE,TCoE,,2026-03-17,No
+E0194,Muppala Sahithi,TCoE,TCoE,,2026-03-17,No
+E0195,Jessieka J,TCoE,TCoE,,2026-03-17,No
+E0196,Vikram Rao,TCoE,TCoE,,2026-03-17,No
+E0197,Nadia Bose,TCoE,TCoE,,2026-07-17,No
+E0198,Lakshmi Tran,TCoE,TCoE,,2026-03-17,No
+E0199,Tanvi Ong,TCoE,TCoE,,2026-03-17,No
+E0200,Thanh Raj,TCoE,TCoE,,2026-03-17,No
+E0201,Minh Pham,TCoE,TCoE,,2026-03-17,No
+E0202,Hoang Pham,TCoE,TCoE,,2026-05-27,No
+E0203,Karthik Nguyen,TCoE,TCoE,,2026-03-17,No
+E0204,Priya Iyer,TCoE,TCoE,,2026-03-17,No
+E0205,Lakshmi Bose,TCoE,TCoE,,2026-03-17,No
+E0206,Wei Pham,TCoE,TCoE,,2026-03-17,No
+E0207,Yusuf Singh,TCoE,TCoE,,2026-03-17,No
+E0208,Shreya Raj,TCoE,TCoE,,2026-03-17,No
+E0209,Gopal Mohan,TCoE,TCoE,,2026-07-17,No
+E0210,Anita Lim,TCoE,TCoE,,2026-03-17,No
+E0211,Yusuf Sharma,TCoE,TCoE,,2026-03-17,No
+E0212,Karthik Hassan,TCoE,TCoE,,2026-03-17,No
+E0213,Priya Chua,TCoE,TCoE,,2026-03-17,No
+E0214,Priya Das,TCoE,TCoE,,2026-03-17,No
+E0215,Anita Wong,TCoE,TCoE,,2026-03-17,No
+E0216,Vikram Nair,TCoE,TCoE,,2026-03-17,No
+E0217,Wei Rahman,TCoE,TCoE,,2026-03-17,No
+E0218,Gopal Rahman,TCoE,TCoE,,2026-03-17,No
+E0219,Bao Tan,TCoE,TCoE,,2026-03-17,No
+E0220,Nadia Patel,TCoE,TCoE,,2026-03-17,No
+E0221,Lina Mohan,TCoE,TCoE,,2026-06-23,No
+E0222,Divya Krishnan,TCoE,TCoE,,2026-04-22,No
+E0223,Deepa Raj,TCoE,TCoE,,2026-03-17,No
+E0224,Rajesh Rao,TCoE,TCoE,,2026-04-27,No
+E0225,Minh Krishnan,TCoE,TCoE,,2026-03-17,No
+E0226,Rohan Kumar,TCoE,TCoE,,2026-03-17,No
+E0227,Anita Menon,TCoE,TCoE,,2026-03-17,No
+E0228,Shreya Lim,TCoE,TCoE,,2026-03-17,No
+E0229,Joel Lim,TCoE,TCoE,,2026-03-17,No
+E0230,Nadia Abdullah,TCoE,TCoE,,2026-03-17,No
+E0231,Meera Rao,TCoE,TCoE,,2026-03-17,No
+E0232,Mai Bose,TCoE,TCoE,,2026-03-17,No
+E0233,Pooja Das,TCoE,TCoE,,2026-03-17,No
+E0234,Thanh Mohan,TCoE,TCoE,,2026-03-17,No
+E0235,Vikram Mohan,TCoE,TCoE,,2026-03-17,No
+E0236,Tanvi Chua,TCoE,TCoE,,2026-03-17,No
+E0237,Lina Ibrahim,TCoE,TCoE,,2026-03-17,No
+E0238,Farid Bose,TCoE,TCoE,,2026-03-17,No
+E0239,Siva Pillai,TCoE,TCoE,,2026-03-17,No
+E0240,Rohan Lim,TCoE,TCoE,,2026-03-17,No
+E0241,Divya Wong,TCoE,TCoE,,2026-03-17,No
+E0242,Anita Bose,TCoE,TCoE,,2026-03-17,No
+E0243,Hoang Nair,TCoE,TCoE,,2026-03-17,No
+E0244,Zainab Kumar,TCoE,TCoE,,2026-03-17,No
+E0245,Arjun Menon,TCoE,TCoE,,2026-03-17,No
+E0246,Minh Le,TCoE,TCoE,,2026-03-17,No
+E0247,Nur Abdullah,TCoE,TCoE,,2026-03-17,No
+E0248,Isha Reddy,TCoE,TCoE,,2026-03-17,No
+E0249,Sanjay Pillai,TCoE,TCoE,,2026-03-17,No
+E0250,Thanh Menon,TCoE,TCoE,,2026-03-17,No
+E0251,Tanvi Raj,TCoE,TCoE,,2026-03-17,No
+E0252,Javad,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0253,Hafiz Pillai,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0254,Sanjay Raj,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0255,Sneha Tran,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0256,Aditi Singh,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0257,Rohan Tran,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0258,Bao Mohan,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0259,Hana Abdullah,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0260,Anita Tran,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0261,Rohan Iyer,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0262,Deepa Gupta,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0263,Chen Raj,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0264,Anita Abdullah,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0265,Rajesh Wong,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0266,Imran Abdullah,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0267,Minh Tran,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0268,Gopal Le,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0269,Hafiz Menon,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0270,Gopal Abdullah,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0271,Karthik Pham,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0272,Mohan Krishnan,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0273,Divya Lim,Product and Innovation,Product and Innovation,,2026-08-13,No
+E0274,Meera Sharma,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0275,Hana Wong,Product and Innovation,Product and Innovation,,2026-06-04,No
+E0276,Farid Abdullah,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0277,Bao Bose,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0278,Wei Gupta,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0279,Tanvi Mohan,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0280,Sara Das,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0281,Sanjay Menon,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0282,Sara Ong,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0283,Chen Mohan,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0284,Shreya Iyer,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0285,Siva Sharma,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0286,Lakshmi Nguyen,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0287,Vikram Gupta,Product and Innovation,Product and Innovation,,2026-08-12,No
+E0288,Siva Tan,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0289,Sanjay Chua,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0290,Nadia Raj,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0291,Aditi Iyer,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0292,Ain Reddy,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0293,Jia Chua,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0294,Naveen Nguyen,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0295,Aarav Singh,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0296,Naveen Wong,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0297,Gopal Wong,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0298,Farid Pham,Product and Innovation,Product and Innovation,,2026-05-18,No
+E0299,Yusuf Pham,Product and Innovation,Product and Innovation,,2026-04-23,No
+E0300,Nur Pham,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0301,Aarav Gupta,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0302,Yusuf Joshi,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0303,Rohan Das,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0304,Karthik Gupta,Product and Innovation,Product and Innovation,,2026-06-22,No
+E0305,Sanjay Joshi,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0306,Zainab Nair,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0307,Jia Rahman,Product and Innovation,Product and Innovation,,2026-03-17,No
+E0308,Dominic Domingo,Product Development,Product Development,,2026-03-17,No
+E0309,Preetham Gangadhar,Product Development,Product Development,,2026-03-17,No
+E0310,Madan Lodhi,Product Development,Product Development,,2026-03-17,No
+E0311,Ranjitha Logarathnam,Product Development,Product Development,,2026-03-17,No
+E0312,Ponpandi B,Product Development,Product Development,,2026-03-17,No
+E0313,Veeresh Kumar,Product Development,Product Development,,2026-03-17,No
+E0314,Khushi Jain,Product Development,Product Development,,2026-03-17,No
+E0315,Veer Ramgangwar,Product Development,Product Development,,2026-03-17,No
+E0316,Ekambara Thoppi,Product Development,Product Development,,2026-03-17,No
+E0317,Linh Tuong,Product Development,Product Development,,2026-03-17,No
+E0318,Deekshith Shetty,Product Development,Product Development,,2026-03-17,No
+E0319,Pushpa Honnegowda,Product Development,Product Development,,2026-03-17,No
+E0320,Jhansi Mj,Product Development,Product Development,,2026-03-17,No
+E0321,Laurence De Ocampo,Product Development,Product Development,,2026-03-17,No
+E0322,Deepa Nair,Product Development,Product Development,,2026-03-17,No
+E0323,Yusuf Raj,Product Development,Product Development,,2026-03-17,No
+E0324,Rahul Tran,Product Development,Product Development,,2026-03-17,No
+E0325,Ain Tran,Product Development,Product Development,,2026-03-17,No
+E0326,Chen Menon,Product Development,Product Development,,2026-07-06,No
+E0327,Hoang Bose,Product Development,Product Development,,2026-03-17,No
+E0328,Imran Chua,Product Development,Product Development,,2026-03-17,No
+E0329,Deepa Lim,Product Development,Product Development,,2026-03-17,No
+E0330,Aditi Lim,Product Development,Product Development,,2026-03-17,No
+E0331,Siva Rahman,Product Development,Product Development,,2026-03-17,No
+E0332,Shreya Pillai,Product Development,Product Development,,2026-03-17,No
+E0333,Rohan Rahman,Product Development,Product Development,,2026-03-17,No
+E0334,Nadia Krishnan,Product Development,Product Development,,2026-03-17,No
+E0335,Pooja Mohan,Product Development,Product Development,,2026-03-17,No
+E0336,Meera Tan,Product Development,Product Development,,2026-03-17,No
+E0337,Ravi Reddy,Product Development,Product Development,,2026-03-17,No
+E0338,Naveen Hassan,Product Development,Product Development,,2026-03-17,No
+E0339,Joel Ong,Product Development,Product Development,,2026-04-24,No
+E0340,Hana Reddy,Product Development,Product Development,,2026-03-17,No
+E0341,Aditi Das,Product Development,Product Development,,2026-03-17,No
+E0342,Deepa Pillai,Product Development,Product Development,,2026-03-17,No
+E0343,Aditi Ong,Product Development,Product Development,,2026-03-17,No
+E0344,Ain Rahman,Product Development,Product Development,,2026-03-17,No
+E0345,Bharath Hassan,Product Development,Product Development,,2026-03-17,No
+E0346,Sanjay Gupta,Product Development,Product Development,,2026-03-17,No
+E0347,Minh Sharma,Product Development,Product Development,,2026-03-17,No
+E0348,Naveen Pillai,Product Development,Product Development,,2026-03-17,No
+E0349,Lakshmi Ibrahim,Product Development,Product Development,,2026-03-17,No
+E0350,Tanvi Hassan,Product Development,Product Development,,2026-06-19,No
+E0351,Tanvi Kumar,Product Development,Product Development,,2026-08-13,No
+E0352,Rohan Hassan,Product Development,Product Development,,2026-03-17,No
+E0353,Lina Iyer,Product Development,Product Development,,2026-03-17,No
+E0354,Jia Tran,Product Development,Product Development,,2026-03-17,No
+E0355,Anita Iyer,Product Development,Product Development,,2026-03-17,No
+E0356,Sara Sharma,Product Development,Product Development,,2026-03-17,No
+E0357,Priya Krishnan,Product Development,Product Development,,2026-03-17,No
+E0358,Isha Gupta,Product Development,Product Development,,2026-03-17,No
+E0359,Faizal Raj,Product Development,Product Development,,2026-03-17,No
+E0360,Thanh Rao,Product Development,Product Development,,2026-06-19,No
+E0361,Pooja Pham,Product Development,Product Development,,2026-03-17,No
+E0362,Aditi Rao,Product Development,Product Development,,2026-05-26,No
+E0363,Hoang Tran,Product Development,Product Development,,2026-03-17,No
+E0364,Nur Reddy,Product Development,Product Development,,2026-03-17,No
+E0365,Rajesh Sharma,Product Development,Product Development,,2026-03-17,No
+E0366,Suresh Pillai,Product Development,Product Development,,2026-03-17,No
+E0367,Karthik Menon,Product Development,Product Development,,2026-03-17,No
+E0368,Bao Singh,Product Development,Product Development,,2026-03-17,No
+E0369,Isha Kumar,Product Development,Product Development,,2026-03-17,No
+E0370,Naveen Bose,Product Development,Product Development,,2026-03-17,No
+E0371,Aarav Pham,Product Development,Product Development,,2026-03-17,No
+E0372,Aarav Nair,Product Development,Product Development,,2026-03-17,No
+E0373,Chen Chua,Product Development,Product Development,,2026-03-17,No
+E0374,Deepa Bose,Product Development,Product Development,,2026-03-17,No
+E0375,Nur Rahman,Product Development,Product Development,,2026-03-17,No
+E0376,Imran Ibrahim,Product Development,Product Development,,2026-03-17,No
+E0377,Aarav Kumar,Product Development,Product Development,,2026-03-17,No
+E0378,Faizal Reddy,Product Development,Product Development,,2026-03-17,No
+E0379,Farid Rao,Product Development,Product Development,,2026-03-17,No
+E0380,Rahul Pham,Product Development,Product Development,,2026-03-17,No
+E0381,Rahul Tan,Product Development,Product Development,,2026-03-17,No
+E0382,Rahul Abdullah,Product Development,Product Development,,2026-04-29,No
+E0383,Divya Singh,Product Development,Product Development,,2026-03-17,No
+E0384,Kiran Patel,Product Development,Product Development,,2026-03-17,No
+E0385,Minh Joshi,Product Development,Product Development,,2026-03-17,No
+E0386,Mai Das,Product Development,Product Development,,2026-03-17,No
+E0387,Aarav Sharma,Product Development,Product Development,,2026-03-17,No
+E0388,Shiridi Shanmugam,ESBU,ESBU,,2026-03-17,No
+E0389,Aditi Joshi,ESBU,ESBU,,2026-03-17,No
+E0390,Naveen Menon,ESBU,ESBU,,2026-03-17,No
+E0391,Chen Nair,ESBU,ESBU,,2026-03-17,No
+E0392,Suresh Menon,ESBU,ESBU,,2026-03-17,No
+E0393,Faizal Ibrahim,ESBU,ESBU,,2026-03-17,No
+E0394,Yusuf Nguyen,ESBU,ESBU,,2026-03-17,No
+E0395,Thanh Ibrahim,ESBU,ESBU,,2026-03-17,No
+E0396,Imran Hassan,ESBU,ESBU,,2026-03-17,No
+E0397,Aditi Tan,ESBU,ESBU,,2026-05-20,No
+E0398,Meera Pham,ESBU,ESBU,,2026-03-17,No
+E0399,Karthyshree Pitchai,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0400,Ramakrishnan S,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0401,Sujithkumar Pachiapp,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0402,Pooja Chua,Service Delivery Mgmt,Service Delivery Mgmt,,2026-08-04,No
+E0403,Aditi Gupta,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0404,Naveen Joshi,Service Delivery Mgmt,Service Delivery Mgmt,,2026-04-15,No
+E0405,Jia Rao,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0406,Meera Iyer,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0407,Mohan Sharma,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0408,Hafiz Iyer,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0409,Minh Abdullah,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0410,Divya Mohan,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0411,Priya Rahman,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0412,Priya Sharma,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0413,Gopal Hassan,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0414,Aarav Menon,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0415,Lakshmi Raj,Service Delivery Mgmt,Service Delivery Mgmt,,2026-05-15,No
+E0416,Siva Gupta,Service Delivery Mgmt,Service Delivery Mgmt,,2026-07-24,No
+E0417,Meera Ibrahim,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0418,Divya Gupta,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0419,Zainab Rao,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0420,Thanh Le,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0421,Pooja Kumar,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0422,Deepa Ibrahim,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0423,Suresh Bose,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0424,Pooja Joshi,Service Delivery Mgmt,Service Delivery Mgmt,,2026-07-14,No
+E0425,Chen Lim,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0426,Mohan Nguyen,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0427,Minh Menon,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0428,Rajesh Hassan,Service Delivery Mgmt,Service Delivery Mgmt,,2026-04-30,No
+E0429,Wei Iyer,Service Delivery Mgmt,Service Delivery Mgmt,,2026-03-17,No
+E0430,Ronald Ng,AG MGATE,AG MGATE,,2026-03-17,No
+E0431,Ain Gupta,AG MGATE,AG MGATE,,2026-03-17,No
+E0432,Priya Abdullah,AG MGATE,AG MGATE,,2026-03-17,No
+E0433,Wei Krishnan,Marketing & Partnership,Marketing & Partnership,,2026-03-17,No
+E0434,Siva Rao,Marketing & Partnership,Marketing & Partnership,,2026-03-17,No
+E0435,Farid Chua,Marketing & Partnership,Marketing & Partnership,,2026-03-17,No
+E0436,Rohan Ong,Marketing & Partnership,Marketing & Partnership,,2026-03-17,No
+E0437,Phyoe Thiha,MSO,MSO - Ops & Service Mgmt,,2026-03-17,No
+E0438,Bharath Iyer,MSO,MSO - Ops & Service Mgmt,,2026-03-17,No
+E0439,Anita Pillai,MSO,MSO - Ops & Service Mgmt,,2026-03-17,No
+E0440,Chen Hassan,MSO,MSO - Ops & Service Mgmt,,2026-03-17,No
+E0441,Mai Sharma,MSO,MSO - Ops & Service Mgmt,,2026-03-17,No
+E0442,Yusuf Tan,MSO,MSO - Ops & Service Mgmt,,2026-03-17,No
+E0443,Deepa Le,Software Engineering,Software Engineering,,2026-03-17,No
+E0444,Vikram Chua,Software Engineering,Software Engineering,,2026-03-17,No
+E0445,Faizal Pillai,Software Engineering,Software Engineering,,2026-06-01,No
+E0446,Prashanth Nagarajan,SAP Practice,SAP Practice,,2026-03-17,No
+E0447,Nageswara Rao,SAP Practice,SAP Practice,,2026-03-17,No
+E0448,Revathi C,SAP Practice,SAP Practice,,2026-03-17,No
+E0449,Hoang Sharma,SAP Practice,SAP Practice,,2026-03-17,No
+E0450,Zainab Wong,SAP Practice,SAP Practice,,2026-03-17,No
+E0451,Hafiz Patel,SAP Practice,SAP Practice,,2026-03-17,No
+E0452,Anita Mohan,SAP Practice,SAP Practice,,2026-03-17,No
+E0453,Muhammad Ismail,Sales - MY SG ASEAN,Sales - MY SG ASEAN,,2026-03-17,No
+E0454,Menakasri Rajendran,Sales - MY SG ASEAN,Sales - MY SG ASEAN,,2026-03-17,No
+E0455,Fitri Tahir,Sales - MY SG ASEAN,Sales - MY SG ASEAN,,2026-03-17,No
+E0456,Jeanny Phuong,Sales - MY SG ASEAN,Sales - MY SG ASEAN,,2026-03-17,No
+E0457,Kavya Rahman,Sales - MY SG ASEAN,Sales - MY SG ASEAN,,2026-03-17,No
+E0458,Farid Rahman,Sales - MY SG ASEAN,Sales - MY SG ASEAN,,2026-03-17,No
+E0459,Yusuf Wong,Sales - MY SG ASEAN,Sales - MY SG ASEAN,,2026-03-17,No
+E0460,Aarav Abdullah,Sales - MY SG ASEAN,Sales - MY SG ASEAN,,2026-03-17,No
+E0461,Sajeev Raj,IT Security & Governance,IT Security & Governance,,2026-03-17,No
+E0462,Hana Nair,IT Security & Governance,IT Security & Governance,,2026-03-17,No
+T0,Test account 1,Default,Default,,,Yes
+T1,Test account 2,Default,Default,,,Yes
+T2,Test account 3,Default,Default,,,Yes
+T3,Test account 4,Default,Default,,,Yes
+T4,Test account 5,Default,Default,,,Yes

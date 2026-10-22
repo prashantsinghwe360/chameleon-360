@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useDash } from '../state';
-import { axisProps, CHART, DataTable, InsightPanel, NumberField, PageHeader, Section, Stat, ThresholdControl, type Insight } from '../components/ui';
+import { axisProps, CHART, DataTable, InsightPanel, NumberField, PageHeader, Section, Stat, ThresholdControl } from '../components/ui';
 import { aiAdoption, compare, fmtH, fmtN, fmtPct, METRIC_LABEL, thresholdText } from '../lib/metrics';
-import { aiInsight } from '../lib/insights';
 
 export function AIPage() {
-  const { ds, scope, stats } = useDash();
+  const { ds, scope, stats, rulesFor } = useDash();
   const cfg = ds.config;
   const [lowT, setLowT] = useState(cfg.defaults.individualsThreshold);
   const [powerN, setPowerN] = useState(cfg.defaults.aiPowerUserCount);
@@ -15,29 +14,12 @@ export function AIPage() {
   const nonAi = useMemo(() => stats.filter((s) => s.aiHrs === 0), [stats]);
   const nonAiLow = useMemo(() => nonAi.filter((s) => s.presentDays >= cfg.minPresentDaysForLists && compare(s.avg[lowT.metric], lowT.op, lowT.value)), [nonAi, lowT, cfg]);
   const power = useMemo(() => [...stats].filter((s) => s.aiHrs > 0).sort((a, b) => b.aiHrs - a.aiHrs).slice(0, powerN), [stats, powerN]);
-  const powerShare = ai.totalHrs ? (power.reduce((a, s) => a + s.aiHrs, 0) / ai.totalHrs) * 100 : 0;
 
-  const full = ai.monthly.filter((m) => !m.partial);
-  const last = full[full.length - 1], prev = full[full.length - 2];
-  const insights: Insight[] = [aiInsight(ai.adoptionPct, ai.nonHubPct, ai.perUserPerMonth, cfg.aiHubTool)];
-  if (last && prev) {
-    const d = last.users - prev.users;
-    insights.push({
-      tone: d < 0 ? 'priority' : 'maintain',
-      title: d < 0 ? `Active AI users dropped in ${last.month}` : `Active AI users grew in ${last.month}`,
-      body: `${prev.month}: ${prev.users} users, ${fmtN(prev.hours)} h → ${last.month}: ${last.users} users, ${fmtN(last.hours)} h. ${d < 0 ? 'Find out whether licences lapsed or interest faded.' : 'Keep sharing what is working.'}`,
-      link: { page: 'ai', anchor: 'power' },
-    });
-  }
-  insights.push({
-    tone: 'opportunity', title: `The top ${power.length} users drive ${fmtPct(powerShare)} of AI time`,
-    body: `Usage is concentrated. Ask them to show their peers concrete use cases - especially the ${fmtN(nonAiLow.length)} non-users who also average ${thresholdText(lowT)}.`,
-    link: { page: 'ai', anchor: 'nonai' },
-  });
+  const insights = rulesFor('ai');
 
   const donut = [
-    { name: 'Used an AI tool', value: ai.adopters, color: CHART.green },
-    { name: 'No AI tool use found', value: ai.people - ai.adopters, color: CHART.grey },
+    { name: 'Used an AI tool', value: ai.adopters, color: CHART.ai },
+    { name: 'No AI tool use found', value: ai.people - ai.adopters, color: CHART.missing },
   ];
 
   return (
@@ -72,31 +54,32 @@ export function AIPage() {
               <CartesianGrid stroke={CHART.grid} horizontal={false} />
               <XAxis type="number" {...axisProps} allowDecimals={false} />
               <YAxis type="category" dataKey="tool" {...axisProps} width={150} />
-              <Tooltip />
-              <Bar dataKey="users" name="Users" fill={CHART.navy} radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12 }} />
+              <Tooltip cursor={{ fill: 'rgba(229, 223, 255, .35)' }} content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const t = payload[0].payload as { tool: string; users: number; hours: number };
+                return (
+                  <div className="chart-tip">
+                    <b>{t.tool}</b>
+                    <span>{fmtN(t.users)} users</span>
+                    <span>{fmtN(t.hours)} h total time on tool</span>
+                    <span className="muted">{fmtH(t.users ? t.hours / t.users : 0)} per user</span>
+                  </div>
+                );
+              }} />
+              <Bar dataKey="users" name="Users" fill={CHART.ai} radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12 }} />
             </BarChart>
           </ResponsiveContainer>
         </Section>
 
-        <Section id="nonai" span={6} title="People with no AI use"
+        <Section id="nonai" title="People with no AI use"
           tools={<ThresholdControl value={lowT} onChange={setLowT} prefix="Also averaging" />}
           note={`${fmtN(nonAi.length)} of ${fmtN(ai.people)} people show no AI-assistant use. ${fmtN(nonAiLow.length)} of them also average ${thresholdText(lowT)} (${cfg.minPresentDaysForLists}+ present days).`}>
           <DataTable rows={nonAiLow} max={10} initialSort={{ key: 'v', dir: 'asc' }} cols={[
             { key: 'name', label: 'Name', get: (r) => r.emp.name },
             { key: 'dept', label: 'Department', get: (r) => r.emp.department },
             { key: 'v', label: `Avg ${METRIC_LABEL[lowT.metric].toLowerCase()}`, align: 'right', get: (r) => r.avg[lowT.metric], render: (r) => fmtH(r.avg[lowT.metric], 2) },
+            { key: 'o', label: 'Avg online', align: 'right', get: (r) => r.avg.online, render: (r) => fmtH(r.avg.online, 2) },
             { key: 'd', label: 'Days', align: 'right', get: (r) => r.presentDays },
-          ]} />
-        </Section>
-
-        <Section id="power" span={6} title="AI power users"
-          tools={<><span className="ctl-label">Show top</span><NumberField label="Number of power users" value={powerN} step={1} min={1} onChange={(v) => setPowerN(Math.max(1, Math.round(v)))} /></>}
-          note="Total AI-assistant hours in the period.">
-          <DataTable rows={power} initialSort={{ key: 'h', dir: 'desc' }} cols={[
-            { key: 'name', label: 'Name', get: (r) => r.emp.name },
-            { key: 'dept', label: 'Department', get: (r) => r.emp.department },
-            { key: 'tools', label: 'Tools', get: (r) => r.aiTools.size },
-            { key: 'h', label: 'AI hrs', align: 'right', get: (r) => r.aiHrs, render: (r) => r.aiHrs.toFixed(1) },
           ]} />
         </Section>
 
@@ -109,11 +92,37 @@ export function AIPage() {
               <YAxis yAxisId="u" orientation="right" {...axisProps} allowDecimals={false} />
               <Tooltip />
               <Legend verticalAlign="top" height={28} />
-              <Bar yAxisId="h" dataKey="hours" name="AI hours" fill={CHART.navy} radius={[3, 3, 0, 0]} />
-              <Line yAxisId="u" dataKey="users" name="Distinct users" stroke={CHART.orange} strokeWidth={2} dot={{ r: 3 }} />
+              <Bar yAxisId="h" dataKey="hours" name="AI hours" fill={CHART.ai} radius={[3, 3, 0, 0]} />
+              <Line yAxisId="u" dataKey="users" name="Distinct users" stroke={CHART.aiLine} strokeWidth={2} dot={{ r: 3 }} />
             </ComposedChart>
           </ResponsiveContainer>
         </Section>
+        <Section id="power" title="AI power users"
+          tools={<><span className="ctl-label">Show top</span><NumberField label="Number of power users" value={powerN} step={1} min={1} onChange={(v) => setPowerN(Math.max(1, Math.round(v)))} /></>}
+          note="Total AI-assistant hours in the period. Hover a bar for department and tools used.">
+          <ResponsiveContainer width="100%" height={Math.max(240, power.length * 30 + 30)}>
+            <BarChart data={power.map((p) => ({ name: p.emp.name, dept: p.emp.department, tools: [...p.aiTools].join(', '), hours: +p.aiHrs.toFixed(1) }))}
+              layout="vertical" margin={{ top: 0, right: 50, bottom: 0, left: 0 }}>
+              <CartesianGrid stroke={CHART.grid} horizontal={false} />
+              <XAxis type="number" {...axisProps} unit="h" />
+              <YAxis type="category" dataKey="name" {...axisProps} width={180} interval={0} />
+              <Tooltip cursor={{ fill: 'rgba(229, 223, 255, .35)' }} content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const p = payload[0].payload as { name: string; dept: string; tools: string; hours: number };
+                return (
+                  <div className="chart-tip">
+                    <b>{p.name}</b>
+                    <span className="muted">{p.dept}</span>
+                    <span>{p.hours} h on AI tools</span>
+                    <span className="muted">{p.tools}</span>
+                  </div>
+                );
+              }} />
+              <Bar dataKey="hours" fill={CHART.ai} radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12, formatter: (v: number) => `${v}h` }} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Section>
+
       </div>
     </>
   );
