@@ -2,7 +2,7 @@
  * DATA LOADER - reads one client's folder from data/<client-id>/:
  *   employees.csv, daily_activity.csv, app_usage.csv, client_config.json
  * ---------------------------------------------------------------------
- * Which client:  ?client=<id> in the URL  >  VITE_CLIENT  >  first folder.
+ * Which client:  ?client=<id> in the URL  >  VITE_CLIENT  >  data/clients.json "default"  >  first folder.
  * Where from:    bundled at build time (default), or fetched at runtime
  *                from VITE_DATA_BASE_URL/<client-id>/... when that is set.
  * ===================================================================== */
@@ -39,9 +39,13 @@ function mergeConfig(json: Partial<ClientConfig>): ClientConfig {
   };
 }
 
+// data/clients.json names the default client (a plain file, so it survives GitHub browser uploads)
+const manifest = import.meta.glob('/data/clients.json', { import: 'default', eager: true }) as Record<string, { default?: string }>;
+const defaultClient = Object.values(manifest)[0]?.default;
+
 function pickClient(): string {
   const fromUrl = new URLSearchParams(window.location.search).get('client');
-  const id = fromUrl || import.meta.env.VITE_CLIENT || bundledClients[0];
+  const id = fromUrl || import.meta.env.VITE_CLIENT || (defaultClient && bundledClients.includes(defaultClient) ? defaultClient : bundledClients[0]);
   if (!id) throw new DatasetError('No client data found. Add a folder under data/ with employees.csv, daily_activity.csv and app_usage.csv.');
   return id;
 }

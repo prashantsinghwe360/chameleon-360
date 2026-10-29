@@ -12,6 +12,15 @@ npm run build      # typecheck + single-file build in dist/index.html
 npm run data:demo  # regenerate data/demo-client/ (only needed for the demo)
 ```
 
+## Deploy (Cloudflare Workers)
+
+`wrangler.jsonc` serves the built `dist/` folder as static assets, so Cloudflare's build runs:
+
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy`
+
+The default client is set in `data/clients.json` (`"default": "we360-sample"`); `?client=<id>` in the URL opens another.
+
 ## Pages
 
 Formulas, decision rules and how the tabs link together are documented in **[docs/LOGIC.md](docs/LOGIC.md)**.

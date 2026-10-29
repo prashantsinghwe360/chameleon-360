@@ -13,7 +13,7 @@ data/
     client_config.json   optional - anything left out uses src/data/clientConfig.ts
 ```
 
-**Which client is shown:** `?client=<client-id>` in the URL, else `VITE_CLIENT` at build time (set to `we360-sample` in `.env`), else the first folder.
+**Which client is shown:** `?client=<client-id>` in the URL, else `VITE_CLIENT` at build time, else `"default"` in `data/clients.json` (`we360-sample`), else the first folder.
 
 ## employees.csv — one row per tracked person
 
