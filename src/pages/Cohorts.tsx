@@ -205,7 +205,7 @@ export function CohortsPage() {
 /* Member detail page for one cohort                                      */
 /* ====================================================================== */
 function CohortDetail({ c, list, total, onEdit }: { c: CohortDef; list: PersonStat[]; total: number; onEdit: () => void }) {
-  const { back, breakdown, team } = useDash();
+  const { back, breakdown, team, org, teamOf, setTeam } = useDash();
   const perPerson = breakdown === 'person';
   // members by department, or each member's first-rule value when a single team is selected
   const firstRule = c.rules[0];
@@ -232,7 +232,7 @@ function CohortDetail({ c, list, total, onEdit }: { c: CohortDef; list: PersonSt
   ];
   const baseCols: Col<PersonStat>[] = [
     { key: 'name', label: 'Name', get: (p) => p.emp.name },
-    { key: 'dept', label: 'Department', get: (p) => p.emp.department },
+    { key: 'dept', label: org.D, get: (p) => p.emp.department },
     { key: 'team', label: 'Team', get: (p) => p.emp.team },
     ...ruleCols,
     ...context.filter(([m]) => !tested.has(m)).map(([, col]) => col),
@@ -253,7 +253,7 @@ function CohortDetail({ c, list, total, onEdit }: { c: CohortDef; list: PersonSt
           </div>
           <div className="rule-chips">{c.rules.map((r) => <span key={r.id} className="chip" style={{ background: `${c.color}22`, color: 'var(--ink)' }}>{ruleText(r)}</span>)}</div>
         </Section>
-        <Section title={perPerson ? `Members in ${team} · ${personMeasure}` : 'Members by department'}>
+        <Section title={perPerson ? `Members in ${team} · ${personMeasure}` : `Members by ${org.d}`}>
           {byDept.length ? (
             <ResponsiveContainer width="100%" height={Math.max(200, byDept.length * 26 + 40)}>
               <BarChart data={byDept} layout="vertical" margin={{ top: 0, right: 40, bottom: 0, left: 0 }} maxBarSize={26}>
@@ -261,7 +261,9 @@ function CohortDetail({ c, list, total, onEdit }: { c: CohortDef; list: PersonSt
                 <XAxis type="number" {...axisProps} allowDecimals={perPerson} unit={perPerson && personUnit !== 'd' ? personUnit : undefined} />
                 <YAxis type="category" dataKey="name" {...axisProps} width={180} interval={0} />
                 <Tooltip formatter={(v: number) => (perPerson ? [`${v}${personUnit}`, personMeasure] : [`${v} people`, 'Members'])} />
-                <Bar dataKey="people" fill={c.color} radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12 }} />
+                <Bar dataKey="people" fill={c.color} radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12 }}
+                  cursor={!perPerson && org.teamsOnly ? 'pointer' : undefined}
+                  onClick={(d: { name?: string; payload?: { name?: string } }) => { const t = !perPerson && org.teamsOnly ? teamOf(d?.payload?.name ?? d?.name ?? '') : null; if (t) setTeam(t); }} />
               </BarChart>
             </ResponsiveContainer>
           ) : <p className="empty">Nobody matches these rules in this period.</p>}
@@ -278,7 +280,7 @@ function CohortDetail({ c, list, total, onEdit }: { c: CohortDef; list: PersonSt
 /* Built-in groupings (moved from Teams): people per hour range by month  */
 /* ====================================================================== */
 function BuiltinGroupings() {
-  const { ds, scope, stats, reliable } = useDash();
+  const { ds, scope, stats, reliable, org } = useDash();
   const cfg = ds.config;
   const [cohortBy, setCohortBy] = useState<CohortBy>('band');
   const [cohortMetric, setCohortMetric] = useState<MetricKey>('active');
@@ -313,7 +315,7 @@ function BuiltinGroupings() {
         <Select label="Group people by" value={cohortBy} onChange={setCohortBy} options={[
           { value: 'band', label: 'Group by activity band' },
           { value: 'ai', label: 'Group by AI usage' },
-          { value: 'department', label: 'Group by department' },
+          { value: 'department', label: `Group by ${org.d}` },
           { value: 'join', label: 'Group by join month' },
         ]} />
         <Select label="Card metric" value={cohortMetric} onChange={setCohortMetric} options={METRIC_OPTIONS.map((o) => ({ ...o, label: `Cards show ${o.label.toLowerCase()}` }))} />
@@ -351,7 +353,7 @@ function BuiltinGroupings() {
           ))}
         </BarChart>
       </ResponsiveContainer>
-      {cohortBy === 'department' && cohort.rows.length > 8 && <p className="muted small">Showing the 8 largest departments.</p>}
+      {cohortBy === 'department' && cohort.rows.length > 8 && <p className="muted small">Showing the 8 largest {org.ds}.</p>}
     </Section>
   );
 }

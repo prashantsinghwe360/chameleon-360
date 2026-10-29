@@ -16,7 +16,7 @@ export function DataPage() {
   const c = ds.config;
   return (
     <>
-      <PageHeader title="Data & settings" lede="What this dashboard is reading and the rules applied. Each client is a folder under data/ - add one to onboard a client, no code changes." />
+      <PageHeader filters="none" title="Data & settings" lede="What this dashboard is reading and the rules applied. Each client is a folder under data/ - add one to onboard a client, no code changes." />
       <div className="grid">
         <Section span={6} title="Loaded dataset">
           <dl className="facts">

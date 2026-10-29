@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bot, ChevronDown, Clock, Database, Gauge, Layers, LayoutGrid, Menu, MousePointerClick, UsersRound } from 'lucide-react';
-import type { PeriodKey } from './types';
-import { ALL_CATEGORIES, ALL_TEAMS, DashboardProvider, useDash, type PageKey } from './state';
-import { Select } from './components/ui';
-import { fmtDate, PERIOD_LABEL } from './lib/metrics';
+import { DashboardProvider, useDash, type PageKey } from './state';
 import { OverviewPage } from './pages/Overview';
 import { TeamsPage } from './pages/Teams';
 import { CohortsPage } from './pages/Cohorts';
@@ -24,7 +21,7 @@ const DASHBOARD_TABS: { key: PageKey; label: string; icon: typeof LayoutGrid }[]
 ];
 
 function Shell() {
-  const { ds, page, anchor, detail, go, period, setPeriod, scope, team, setTeam, teams, category, setCategory, categories } = useDash();
+  const { ds, page, anchor, detail, go } = useDash();
   const [dashOpen, setDashOpen] = useState(true);
   const mainRef = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
@@ -75,20 +72,10 @@ function Shell() {
       <button className="scrim" aria-label="Close menu" onClick={() => setOpen(false)} />
 
       <main ref={mainRef} className="main">
+        {/* mobile only: the menu button (filters now live in each page header) */}
         <div className="topbar">
           <button className="menu-btn" aria-label="Open menu" onClick={() => setOpen(true)}><Menu size={20} /></button>
-          <div className="range">
-            <b>{fmtDate(scope.range.start)} – {fmtDate(scope.range.end)}</b>
-            <span>{team !== ALL_TEAMS ? `${team} · ` : ''}{scope.range.workingDays} working days{scope.range.clipped ? ` · only ${fmtDate(scope.range.dataStart)} onward is available` : ''}</span>
-          </div>
-          <Select label="Team" value={team} onChange={setTeam}
-            options={[{ value: ALL_TEAMS, label: `All teams (${teams.reduce((a, t) => a + t.people, 0)})` }, ...teams.map((t) => ({ value: t.name, label: `${t.name} (${t.people})` }))]} />
-          {page === 'apps' && (
-            <Select label="Category" value={category} onChange={setCategory}
-              options={[{ value: ALL_CATEGORIES, label: 'All categories' }, ...categories.map((c) => ({ value: c, label: c }))]} />
-          )}
-          <Select<PeriodKey> label="Period" value={period} onChange={setPeriod}
-            options={(Object.keys(PERIOD_LABEL) as PeriodKey[]).map((k) => ({ value: k, label: PERIOD_LABEL[k] }))} />
+          <b className="topbar-title">{ds.config.clientName}</b>
         </div>
         <div className="content"><Page /></div>
       </main>

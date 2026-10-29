@@ -1,20 +1,51 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { ArrowDown, ArrowLeft, ArrowUp, ChevronDown, ChevronRight } from 'lucide-react';
-import type { Comparator, MetricKey, Threshold } from '../types';
-import { METRIC_LABEL } from '../lib/metrics';
-import { useDash } from '../state';
+import type { Comparator, MetricKey, PeriodKey, Threshold } from '../types';
+import { fmtDate, METRIC_LABEL, PERIOD_LABEL } from '../lib/metrics';
+import { ALL_CATEGORIES, ALL_TEAMS, useDash } from '../state';
 import type { Insight, InsightTone } from '../types';
 import { analytics, family, seriesPalette, slate, wellness } from '../theme/tokens';
 
 /* ------------------------------ layout ------------------------------ */
-export function PageHeader({ title, lede, children }: { title: string; lede: string; children?: ReactNode }) {
+/** Team, category (Apps tab only) and period filters, with the date range under them. */
+export function HeaderFilters({ team: showTeam = true, extra }: { team?: boolean; extra?: ReactNode }) {
+  const { page, period, setPeriod, team, setTeam, teams, category, setCategory, categories, scope } = useDash();
+  return (
+    <div className="head-filters">
+      <div className="head-filter-row">
+        {showTeam && (
+          <Select label="Team" value={team} onChange={setTeam}
+            options={[{ value: ALL_TEAMS, label: `All teams (${teams.reduce((a, t) => a + t.people, 0)})` }, ...teams.map((t) => ({ value: t.name, label: `${t.name} (${t.people})` }))]} />
+        )}
+        {extra}
+        {page === 'apps' && (
+          <Select label="Category" value={category} onChange={setCategory}
+            options={[{ value: ALL_CATEGORIES, label: 'All categories' }, ...categories.map((c) => ({ value: c, label: c }))]} />
+        )}
+        <Select<PeriodKey> label="Period" value={period} onChange={setPeriod}
+          options={(Object.keys(PERIOD_LABEL) as PeriodKey[]).map((k) => ({ value: k, label: PERIOD_LABEL[k] }))} />
+      </div>
+      <span className="head-range">
+        {fmtDate(scope.range.start)} – {fmtDate(scope.range.end)} · {scope.range.workingDays} working days
+        {scope.range.clipped ? ` · data from ${fmtDate(scope.range.dataStart)}` : ''}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Two-column page header: title + description (and any page tools) on the left,
+ * filters on the right. `filters`: 'all' (team + period), 'period' (no team), 'none'.
+ */
+export function PageHeader({ title, lede, children, filters = 'all', extraFilters }: { title: string; lede: string; children?: ReactNode; filters?: 'all' | 'period' | 'none'; extraFilters?: ReactNode }) {
   return (
     <header className="page-head">
-      <div>
+      <div className="page-head-main">
         <h1>{title}</h1>
-        <p className="lede">{lede}</p>
+        {lede && <p className="lede">{lede}</p>}
+        {children && <div className="page-head-tools">{children}</div>}
       </div>
-      {children && <div className="page-head-tools">{children}</div>}
+      {filters !== 'none' && <HeaderFilters team={filters === 'all'} extra={extraFilters} />}
     </header>
   );
 }
@@ -49,14 +80,16 @@ export function Section({ id, title, note, tools, children, span = 12, onOpen, w
 }
 
 /** Header for a full-page detail view, with a Back button to where the user came from. */
-export function DetailHeader({ title, lede, children }: { title: string; lede?: string; children?: ReactNode }) {
+export function DetailHeader({ title, lede, children, filters = 'all', extraFilters }: {
+  title: string; lede?: string; children?: ReactNode; filters?: 'all' | 'period' | 'none'; extraFilters?: ReactNode;
+}) {
   const { back, backLabel, canGoBack } = useDash();
   return (
     <>
       {canGoBack && (
         <button className="back-btn" onClick={back}><ArrowLeft size={16} aria-hidden /> Back to {backLabel}</button>
       )}
-      <PageHeader title={title} lede={lede ?? ''}>{children}</PageHeader>
+      <PageHeader title={title} lede={lede ?? ''} filters={filters} extraFilters={extraFilters}>{children}</PageHeader>
     </>
   );
 }
@@ -174,9 +207,11 @@ export interface Col<T> {
   key: string; label: string; align?: 'left' | 'right';
   get: (r: T) => number | string; render?: (r: T) => ReactNode;
 }
-export function DataTable<T>({ rows, cols, initialSort, rowClass, max, empty = 'Nobody matches this filter.' }: {
+export function DataTable<T>({ rows, cols, initialSort, rowClass, max, empty = 'Nobody matches this filter.', onRowClick, rowTitle }: {
   rows: T[]; cols: Col<T>[]; initialSort?: { key: string; dir: 'asc' | 'desc' };
   rowClass?: (r: T, i: number) => string; max?: number; empty?: string;
+  /** makes a row clickable (returns false to leave that row inert) */
+  onRowClick?: (r: T) => void | false; rowTitle?: (r: T) => string | undefined;
 }) {
   const [sort, setSort] = useState(initialSort ?? null);
   const [showAll, setShowAll] = useState(false);
@@ -209,7 +244,11 @@ export function DataTable<T>({ rows, cols, initialSort, rowClass, max, empty = '
         </thead>
         <tbody>
           {visible.map((r, i) => (
-            <tr key={i} className={rowClass?.(r, i) ?? ''}>
+            <tr key={i} className={`${rowClass?.(r, i) ?? ''} ${onRowClick && rowTitle?.(r) !== undefined ? 'row-link' : ''}`}
+              {...(onRowClick && rowTitle?.(r) !== undefined ? {
+                onClick: () => onRowClick(r), tabIndex: 0, title: rowTitle?.(r),
+                onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter') onRowClick(r); },
+              } : {})}>
               {cols.map((c) => <td key={c.key} className={c.align === 'right' ? 'r' : ''}>{c.render ? c.render(r) : c.get(r)}</td>)}
             </tr>
           ))}

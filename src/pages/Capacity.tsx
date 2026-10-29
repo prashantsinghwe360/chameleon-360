@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
+import { CapacityKpis, CapacityLensView, TeamsGlance } from '../components/capacityViews';
 import { Bar, BarChart, CartesianGrid, Cell, Legend, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useDash } from '../state';
 import {
   axisProps, CHART, DataTable, DetailHeader, InsightPanel, METRIC_OPTIONS, NumberField, PageHeader, Section, Select, Stat,
 } from '../components/ui';
-import { capacity, fmtH, fmtN, fmtPct, H, METRIC_LABEL, type PersonStat } from '../lib/metrics';
+import { capacity, capacityBand, capacityBreakdown, fmtH, fmtN, fmtPct, METRIC_LABEL, type CapacityBreakdown, type PersonStat } from '../lib/metrics';
 import { family, wellness } from '../theme/tokens';
 import type { MetricKey } from '../types';
 
@@ -17,17 +18,27 @@ const BAND_FILL = family.tealGreen.light;
 const LINE_COLOR = family.tealGreen.base;
 
 export function CapacityPage() {
-  const { ds, scope, stats, detail, openDetail, teamLabel, capacityCfg, setCapacityCfg, rulesFor, breakdown, team, GroupNoun } = useDash();
+  const { ds, scope, stats, detail, openDetail, teamLabel, capacityCfg, setCapacityCfg, rulesFor, breakdown, team, GroupNoun, org: org_, teamOf, openTeam, setTeam } = useDash();
   const perPerson = breakdown === 'person';
+  const teamClicks = !perPerson && org_.teamsOnly;
+  /** team bar / row: from the tab open that team's detail page; on a detail page switch the filter */
+  const drill = (name: string | undefined, to: string) => {
+    const t = name && teamClicks ? teamOf(name) : null;
+    if (!t) return;
+    if (detail) setTeam(t); else openTeam(t, to, to);
+  };
+  const rowTitle = (r: { name: string }) => (teamClicks && teamOf(r.name) ? `Show ${r.name}'s people` : undefined);
   const cfg = ds.config;
   // shared with the decision rules, so Overview and this tab always agree
   const { metric, benchmark, variancePct: variance } = capacityCfg;
+  const { min, max } = capacityBand(capacityCfg);
   const setMetric = (m: MetricKey) => setCapacityCfg({ ...capacityCfg, metric: m });
-  const setBenchmark = (v: number) => setCapacityCfg({ ...capacityCfg, benchmark: v });
-  const setVariance = (v: number) => setCapacityCfg({ ...capacityCfg, variancePct: v });
-
-  const min = +(benchmark * (1 - variance / 100)).toFixed(2);
-  const max = +(benchmark * (1 + variance / 100)).toFixed(2);
+  // moving the benchmark keeps the band's shape (scales min and max with it)
+  const setBenchmark = (v: number) => setCapacityCfg({ ...capacityCfg, benchmark: v, min: +(min * v / benchmark).toFixed(2), max: +(max * v / benchmark).toFixed(2) });
+  // ± variance sets a symmetric band; min / max can also be typed directly
+  const setVariance = (v: number) => setCapacityCfg({ ...capacityCfg, variancePct: v, min: +(benchmark * (1 - v / 100)).toFixed(2), max: +(benchmark * (1 + v / 100)).toFixed(2) });
+  const setMin = (v: number) => setCapacityCfg({ ...capacityCfg, min: Math.min(v, max) });
+  const setMax = (v: number) => setCapacityCfg({ ...capacityCfg, max: Math.max(v, min) });
   const wd = scope.range.workingDays;
   const headcount = scope.employees.length;
   const status = (v: number): Status => (v < min ? 'under' : v > max ? 'over' : 'healthy');
@@ -35,12 +46,9 @@ export function CapacityPage() {
 
   /* ------------------------------ org capacity ------------------------------ */
   // ideal = headcount x working days x benchmark; actual = all recorded hours on the metric
-  const actualHrs = useMemo(() => {
-    const key = metric === 'online' ? 'onlineSec' : metric === 'active' ? 'activeSec' : 'productiveSec';
-    return scope.daily.reduce((a, d) => a + (d.present ? H(d[key]) : 0), 0);
-  }, [scope, metric]);
-  const idealHrs = headcount * wd * benchmark;
-  const usedPct = idealHrs ? (actualHrs / idealHrs) * 100 : 0;
+  // Ideal = benchmark x person-days (headcount x working days); Achieved = Ideal - Absence - Shortfall + Extra
+  const org = useMemo(() => capacityBreakdown(scope, capacityCfg)[0], [scope, capacityCfg]);
+  const byGroup = useMemo(() => capacityBreakdown(scope, capacityCfg, breakdown).sort((a, b) => a.deviation / Math.max(1, a.ideal) - b.deviation / Math.max(1, b.ideal)), [scope, capacityCfg, breakdown]);
 
   // people by status on their own average per present day
   const counted = useMemo(() => stats.filter((p) => p.presentDays > 0), [stats]);
@@ -95,7 +103,8 @@ export function CapacityPage() {
             </div>
           );
         }} />
-        <Bar dataKey="value" radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12, formatter: (v: number) => `${v}h` }}>
+        <Bar dataKey="value" radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12, formatter: (v: number) => `${v}h` }}
+          cursor={teamClicks ? 'pointer' : undefined} onClick={(d: { name?: string; payload?: { name?: string } }) => drill(d?.payload?.name ?? d?.name, 'depts')}>
           {depts.map((d) => <Cell key={d.name} fill={STATUS_COLOR[d.status]} />)}
         </Bar>
       </BarChart>
@@ -116,18 +125,55 @@ export function CapacityPage() {
       <NumberField label="Benchmark hours per day" value={benchmark} step={0.5} min={1} suffix="h/day" onChange={(v) => setBenchmark(Math.max(0.5, v))} />
       <span>±</span>
       <NumberField label="Variance percent" value={variance} step={1} min={0} suffix="%" onChange={(v) => setVariance(Math.max(0, Math.min(90, v)))} />
-      <span className="bench-range">Healthy {min}h – {max}h</span>
+      <span className="bench-range">Healthy</span>
+      <NumberField label="Healthy band minimum" value={min} step={0.25} min={0} suffix="h" onChange={setMin} />
+      <span>–</span>
+      <NumberField label="Healthy band maximum" value={max} step={0.25} min={0} suffix="h" onChange={setMax} />
     </div>
   );
+
+  /* ------------------------------ capacity breakdown ------------------------------ */
+  // hours -> people: how many full-time people (benchmark x working days) the hours are worth
+  const perHead = benchmark * Math.max(1, wd);
+  const fte = (h: number) => h / perHead;
+  const fmtFte = (n: number) => (Math.abs(n) >= 10 ? Math.round(n).toLocaleString('en-US') : n.toFixed(1));
+
+  if (detail === 'breakdown' && org) {
+    const reasonKeys = [...new Set(byGroup.flatMap((g) => Object.keys(g.absenceByReason)))].sort();
+    return (
+      <>
+        <DetailHeader title={`Capacity breakdown by ${perPerson ? 'person' : org_.d}`} lede={`Ideal − absence − shortfall + extra = achieved, on ${label} time against the ${benchmark}h benchmark, for ${teamLabel}.`}>{controls}</DetailHeader>
+        <div className="grid">
+          <div className="span-12"><CapacityKpis b={org} benchmark={benchmark} workingDays={wd} metricLabel={label} status={status} /></div>
+          <Section title="Capacity lens"><CapacityLensView b={org} benchmark={benchmark} workingDays={wd} headcount={headcount} status={status} /></Section>
+          <Section title={`All ${byGroup.length} ${perPerson ? 'people' : org_.ds}`} note="Sorted by deviation as a share of ideal, most below first. Deviation = achieved − ideal = −absence − shortfall + extra.">
+            <DataTable rows={byGroup} initialSort={{ key: 'devPct', dir: 'asc' }} onRowClick={(r) => drill(r.name, 'breakdown')} rowTitle={rowTitle} cols={[
+              { key: 'name', label: GroupNoun, get: (r) => r.name },
+              ...(perPerson ? [] : [{ key: 'people', label: 'People', align: 'right' as const, get: (r: CapacityBreakdown) => r.people }]),
+              { key: 'ideal', label: 'Ideal h', align: 'right', get: (r) => r.ideal, render: (r) => fmtN(r.ideal) },
+              { key: 'absence', label: 'Absence h', align: 'right', get: (r) => r.absence, render: (r) => fmtN(r.absence) },
+              ...reasonKeys.map((k) => ({ key: `r-${k}`, label: `· ${k}`, align: 'right' as const, get: (r: CapacityBreakdown) => r.absenceByReason[k] ?? 0, render: (r: CapacityBreakdown) => <span className="muted">{fmtN(r.absenceByReason[k] ?? 0)}</span> })),
+              { key: 'shortfall', label: 'Shortfall h', align: 'right', get: (r) => r.shortfall, render: (r) => fmtN(r.shortfall) },
+              { key: 'extra', label: 'Extra h', align: 'right', get: (r) => r.extra, render: (r) => fmtN(r.extra) },
+              { key: 'achieved', label: 'Achieved h', align: 'right', get: (r) => r.achieved, render: (r) => fmtN(r.achieved) },
+              { key: 'dev', label: 'Deviation h', align: 'right', get: (r) => r.deviation, render: (r) => <b className={r.deviation < 0 ? 'neg' : 'pos'}>{r.deviation >= 0 ? '+' : '−'}{fmtN(Math.abs(r.deviation))}</b> },
+              { key: 'devFte', label: '≈ people', align: 'right', get: (r) => fte(r.deviation), render: (r) => <span className={r.deviation < 0 ? 'neg' : 'pos'}>{r.deviation >= 0 ? '+' : '−'}{fmtFte(Math.abs(fte(r.deviation)))}</span> },
+              { key: 'devPct', label: 'Deviation %', align: 'right', get: (r) => r.deviation / Math.max(1, r.ideal), render: (r) => fmtPct((r.deviation / Math.max(1, r.ideal)) * 100, 1) },
+            ]} />
+          </Section>
+        </div>
+      </>
+    );
+  }
 
   /* ------------------------------ department detail ------------------------------ */
   if (detail === 'depts') return (
     <>
-      <DetailHeader title={perPerson ? `${team}: capacity by person` : 'Capacity by department'} lede={`Average ${label} hours per present day against the ${benchmark}h benchmark (±${variance}%), for ${teamLabel}.`}>{controls}</DetailHeader>
+      <DetailHeader title={perPerson ? `${team}: capacity by person` : `Capacity by ${org_.d}`} lede={`Average ${label} hours per present day against the ${benchmark}h benchmark (±${variance}%), for ${teamLabel}.`}>{controls}</DetailHeader>
       <div className="grid">
-        <Section title={perPerson ? 'People against the healthy band' : 'Departments against the healthy band'}>{legend}{deptChart(Math.max(280, depts.length * 28 + 60))}</Section>
-        <Section title={`All ${depts.length} ${perPerson ? 'people' : 'departments'}`} note={`Ideal capacity = headcount × ${wd} working days × ${benchmark}h. People are classed on their own average ${label} hours per present day.`}>
-          <DataTable rows={depts} initialSort={{ key: 'v', dir: 'asc' }} rowClass={(r) => (r.status === 'under' ? 'row-bad' : r.status === 'over' ? 'row-warn' : '')} cols={[
+        <Section title={perPerson ? 'People against the healthy band' : `${org_.Ds} against the healthy band`}>{legend}{deptChart(Math.max(280, depts.length * 28 + 60))}</Section>
+        <Section title={`All ${depts.length} ${perPerson ? 'people' : org_.ds}`} note={`Ideal capacity = headcount × ${wd} working days × ${benchmark}h. People are classed on their own average ${label} hours per present day.`}>
+          <DataTable rows={depts} initialSort={{ key: 'v', dir: 'asc' }} onRowClick={(r) => drill(r.name, 'depts')} rowTitle={rowTitle} rowClass={(r) => (r.status === 'under' ? 'row-bad' : r.status === 'over' ? 'row-warn' : '')} cols={[
             { key: 'name', label: GroupNoun, get: (r) => r.name },
             ...(perPerson ? [] : [{ key: 'people', label: 'Headcount', align: 'right' as const, get: (r: DeptRow) => r.people }]),
             { key: 'v', label: `Avg ${label}/day`, align: 'right', get: (r) => r.value, render: (r) => <b>{fmtH(r.value, 2)}</b> },
@@ -165,45 +211,37 @@ export function CapacityPage() {
       <PageHeader title="Time & Capacity" lede="How much of the workforce's capacity is used against a daily benchmark, and how the working day is spent." />
       <InsightPanel items={insights} />
       <div className="grid">
-        <Section id="lens" title="Capacity lens" tools={controls}
-          note={`Ideal capacity = headcount × working days × benchmark = ${fmtN(headcount)} × ${wd} × ${benchmark}h. The healthy band is the benchmark ±${variance}%. Directional, not a staffing recommendation.`}>
-          <div className="lens-stats">
-            <div className="lens-stat" style={{ borderTopColor: CHART.axis }}>
-              <span className="lens-label">Ideal capacity</span>
-              <span className="lens-value">{fmtN(idealHrs)}<small> h</small></span>
-              <span className="lens-sub">{fmtN(headcount)} people × {wd} working days × {benchmark}h</span>
-            </div>
-            <div className="lens-stat" style={{ borderTopColor: CHART[metric] }}>
-              <span className="lens-label">Actual {label} time</span>
-              <span className="lens-value">{fmtN(actualHrs)}<small> h</small></span>
-              <span className="lens-sub">Recorded across all present days</span>
-            </div>
-            <div className="lens-stat" style={{ borderTopColor: STATUS_COLOR[status((usedPct / 100) * benchmark)] }}>
-              <span className="lens-label">Capacity used</span>
-              <span className="lens-value" style={{ color: STATUS_COLOR[status((usedPct / 100) * benchmark)] }}>{fmtPct(usedPct)}</span>
-              <span className="lens-sub">Healthy is {fmtPct(100 - variance)}–{fmtPct(100 + variance)} of ideal</span>
-            </div>
+        {org && (
+          <div className="span-12">
+            <CapacityKpis b={org} benchmark={benchmark} workingDays={wd} metricLabel={label} status={status} />
           </div>
+        )}
 
-          <div className="status-split">
-            <span className="presence-title">{fmtN(counted.length)} people by their average {label} hours per present day</span>
-            <div className="status-bar" role="img" aria-label={`${split.under} underutilised, ${split.healthy} healthy, ${split.over} overburdened`}>
-              {(['under', 'healthy', 'over'] as Status[]).map((s) => split[s] > 0 && (
-                <i key={s} style={{ width: `${(split[s] / totalPeople) * 100}%`, background: STATUS_COLOR[s] }} />
-              ))}
+        {org && (
+          <Section id="lens" title="Capacity lens" tools={controls} onOpen={() => openDetail('breakdown', 'lens')}
+            note={`Net hours for the period, the people they equal at the ${benchmark}h benchmark, and where the gap comes from. Directional, not a staffing recommendation.`}>
+            <CapacityLensView b={org} benchmark={benchmark} workingDays={wd} headcount={headcount} status={status} />
+            <div className="status-split">
+              <span className="presence-title">{fmtN(counted.length)} people by their average {label} hours per present day</span>
+              <div className="status-bar" role="img" aria-label={`${split.under} underutilised, ${split.healthy} healthy, ${split.over} overburdened`}>
+                {(['under', 'healthy', 'over'] as Status[]).map((st) => split[st] > 0 && (
+                  <i key={st} style={{ width: `${(split[st] / totalPeople) * 100}%`, background: STATUS_COLOR[st] }} />
+                ))}
+              </div>
+              <div className="status-legend">
+                <span><b style={{ color: STATUS_COLOR.under }}>{fmtN(split.under)}</b> underutilised · below {min}h</span>
+                <span><b style={{ color: STATUS_COLOR.healthy }}>{fmtN(split.healthy)}</b> healthy · {min}–{max}h</span>
+                <span><b style={{ color: STATUS_COLOR.over }}>{fmtN(split.over)}</b> overburdened · above {max}h</span>
+              </div>
             </div>
-            <div className="status-legend">
-              <span><b style={{ color: STATUS_COLOR.under }}>{fmtN(split.under)}</b> underutilised · below {min}h</span>
-              <span><b style={{ color: STATUS_COLOR.healthy }}>{fmtN(split.healthy)}</b> healthy · {min}–{max}h</span>
-              <span><b style={{ color: STATUS_COLOR.over }}>{fmtN(split.over)}</b> overburdened · above {max}h</span>
-            </div>
-          </div>
-        </Section>
+          </Section>
+        )}
 
-        <Section id="depts" title={perPerson ? `${team}: capacity by person` : 'Capacity by department'} onOpen={() => openDetail('depts', 'depts')}
-          note={`Average ${label} hours per present day. The light band is the healthy range (${min}–${max}h) and the line is the ${benchmark}h benchmark; bars are coloured by status.`}>
-          {legend}
-          {deptChart(Math.max(280, depts.length * 26 + 60))}
+        <Section id="depts" title={perPerson ? `${team} at a glance` : `${org_.Ds} at a glance`} onOpen={() => openDetail('depts', 'depts')}
+          note={`Each dot is a ${perPerson ? 'person' : org_.d}, placed by how loaded it is against the ${benchmark}h ${label} time benchmark. Hover a dot for details${teamClicks ? '; click to see its people' : ''}.`}>
+          <TeamsGlance items={depts.map((d) => ({ name: d.name, value: d.value, status: d.status, people: perPerson ? undefined : d.people }))}
+            min={min} max={max} benchmark={benchmark} variancePct={variance} unit={label} noun={perPerson ? 'person' : org_.d}
+            pickable={teamClicks} onPick={(n) => drill(n, 'depts')} />
         </Section>
 
         {all && (

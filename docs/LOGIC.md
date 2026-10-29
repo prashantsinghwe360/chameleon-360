@@ -124,7 +124,11 @@ Tracked person-days = people × working days they were employed (people who join
 
 ## 3. Global filters
 
-The top bar holds filters that apply to **every tab and every detail page**.
+Every page header has two columns: the title and description on the left, the filters on the right (with the date range
+and working days under them). The filters apply to **every tab and every detail page**.
+
+- **Teams tab:** the main page shows only the period filter and always compares all teams. The team filter appears on its
+  detail pages.
 
 ### Period — Last 1 month / 3 months / 6 months / 1 year
 
@@ -165,8 +169,8 @@ Some settings are held globally, so the same definition is used everywhere it ap
 
 | Setting | Set on | Also drives |
 |---|---|---|
-| **Under-utilised threshold** (default *active < 3h/day*) | Teams · activity patterns | Overview "Under-utilised workforce" card, Teams leaderboard ranking and threshold columns |
-| **Capacity benchmark** (default *online 7h ± 10%*) | Time & Capacity | Act now rule "underutilised > 50%", Opportunity "healthy < 50%", overburdened-days rules |
+| **Activity threshold** (default *active < 3h/day*) | Teams · activity patterns | Teams baseline, leaderboard ranking and threshold columns |
+| **Capacity benchmark and band** (default *online 7h ± 10%*) | Time & Capacity | Overview "Under-utilised workforce" card, Act now rule "underutilised > 50%", Opportunity "healthy < 50%", overburdened-days rules |
 | **Red-flag rules** (default *active < 2h and 50+ present days*) | Cohorts · Red flags detail | Overview "Red-flag individuals" card |
 | **Cohorts** (presets from config) | Cohorts tab | sidebar-independent; evaluated live on period + team |
 
@@ -186,12 +190,12 @@ Some settings are held globally, so the same definition is used everywhere it ap
 | Avg. active hrs / present day | Σ active ÷ Σ present days (all people). Sub-line shows online and productive the same way | Teams › monthly trend |
 | AI tool adoption | people with aiHrs > 0 ÷ people tracked × 100 | AI adoption › adoption |
 | Red-flag individuals | people matching the red-flag rules (see 5.4) | Cohorts › red flags |
-| Under-utilised workforce | reliable people meeting the under-utilised threshold ÷ reliable people × 100 | Cohorts › built-in groupings |
+| Under-utilised workforce | reliable people whose average (capacity metric) is **below the capacity band minimum** ÷ reliable people × 100 | Time & Capacity › lens |
 | Non-work browsing | Σ hours in non-work categories ÷ Σ all app-usage hours × 100 | Apps & websites › non-work screening |
 
 #### Presence coverage
 
-- **Donut:** present person-days ÷ tracked person-days.
+- **Donut:** present person-days ÷ tracked person-days. Absent days are split by **absence reason** when the ledger has one (e.g. Leave, No activity tracked, Unplanned).
 - **Reconciliation line:** *people × working days* vs tracked person-days, explaining any gap from mid-period joiners.
 - **People by presence rate**, per person = present days ÷ their tracked days:
   - **90%+** (green)
@@ -248,14 +252,15 @@ The leaderboard can group by department or by team; in per-person mode it ranks 
 
 #### Benchmark
 
-| Setting | Default |
-|---|---|
-| Metric | avg **online** hours per present day (active / productive also selectable) |
-| Benchmark *B* | **7h** |
-| Variance *v* | **10%** |
+| Setting | Default (demo) | We360 sample |
+|---|---|---|
+| Metric | avg **online** hours per present day | online |
+| Benchmark *B* | **7h** | 7h |
+| Healthy band | B ± 10% = 6.3h – 7.7h | **6.25h – 7.75h** (explicit min / max from the sheet) |
 
 ```
-Healthy band:  min = B × (1 − v) = 6.3h      max = B × (1 + v) = 7.7h
+Healthy band:  explicit min / max when configured, else min = B × (1 − v), max = B × (1 + v)
+               (the ± variance control sets a symmetric band; min and max can also be typed directly)
 
 Status (per person or group, on its own average per present day):
   value < min        → Underutilised   (coral)
@@ -263,19 +268,61 @@ Status (per person or group, on its own average per present day):
   value > max        → Overburdened    (amber)
 ```
 
+#### Summary cards
+
+| Card | Formula |
+|---|---|
+| Average per working day : benchmark | achieved ÷ person-days (absent days count as 0h), shown as *h m : B* |
+| Net capacity deviation | achieved − ideal (includes absence) |
+| Load gap in people | deviation ÷ (B × working days). Negative = spare capacity (underutilised), positive = stretched |
+
 #### Capacity lens
 
 ```
-Ideal capacity  = headcount × working days × B
+Ideal capacity  = B × person-days in the period        (= headcount × working days × B when nobody joins mid-period)
 Actual          = Σ metric hours over all present days
-Capacity used % = Actual ÷ Ideal × 100      (healthy is 90%–110% for v = 10%)
+Capacity used % = Actual ÷ Ideal × 100
 ```
+
+#### Capacity breakdown
+
+```
+Absence   = B × days with no presence                       (split by absence reason)
+Shortfall = Σ over present days of max(0, B − metric)       present, but under the benchmark
+Extra     = Σ over present days of max(0, metric − B)       present, and over the benchmark
+
+Net achieved − net ideal = net capacity deviation  (negative = work not done, positive = extra work)
+Net capacity deviation   = −Absence − Shortfall + Extra
+Achieved                 = Ideal − Absence − Shortfall + Extra
+```
+
+- **Tab (capacity lens):** *Net Achieved Capacity* vs *Net Ideal Capacity* as one bar (colour = the status of the average per
+  working day), the gap in hours, % and people, then **Why the gap**: absence, shortfall and extra hours as bars, each with its
+  person-days at the benchmark (hours ÷ B), and a one-line *What it tells* reading (absence-led, shortfall-led, mixed, or
+  stretched when extra exceeds the gaps; with the top absence reasons). The people-by-status bar sits under it.
+- **Equivalent headcount:**
+
+```
+1 person   = benchmark × working days in the period          (7h × 131 = 917 h)
+≈ people   = hours ÷ (benchmark × working days)
+```
+
+  e.g. net deviation −26,457 h ≈ −29 people of 200 on the roll.
+- **Show details:** the same for every team (or person, with one team selected): ideal, absence (and by reason), shortfall, extra, achieved, deviation, deviation in people, and deviation % of ideal.
+
+These match the workbook's `Org_Summary`, `Team_Monthly` and `Capacity_Employee` tabs exactly.
 
 Absent days count against the ideal, so leave and missing data pull *capacity used* down.
 
 **Status split bar:** every present person classified by their own average (underutilised / healthy / overburdened counts).
 
-#### Capacity by department (or by person)
+#### Teams at a glance
+
+A dot per team (or per person with one team selected) on a load scale: x = average of the capacity metric per present day,
+the shaded area is the healthy band, the dashed line the benchmark. Dots are coloured by status; labels sit in rows below with
+leader lines. Hover for value, status and headcount; click a team dot to open its capacity detail.
+
+#### Capacity by department (or by person) — detail page
 
 - **Bars:** group average of the metric per present day, coloured by status.
 - **Light-teal band** = healthy range. **Solid teal line** = benchmark.
@@ -399,10 +446,10 @@ Flagged = presentDays ≥ minPresentDays (default 50)
 | Adoption excl. hub | people using any AI tool other than `aiHubTool` (M365 Copilot) ÷ people tracked |
 | Total AI time | Σ aiHrs |
 | Per user per month | Σ aiHrs ÷ adopters ÷ (working days ÷ 21.5) |
-| Users by tool | distinct people per tool. Tooltip: users, total time on the tool, time per user |
-| No AI use | people with aiHrs = 0, filtered by a threshold (default active < 4h). Table shows avg active and avg online |
-| Monthly trend | AI hours (bars) and distinct AI users (line) per month |
-| Power users | top N people by aiHrs (default 10), as a bar chart. Tooltip: department and tools |
+| Users by tool | distinct people per tool. Tooltip: users, total time on the tool, time per user. **Show details:** per tool users, % of people, total hours, hours per user, share of all AI time, team with most users. A **Tool** filter in the header (or a click on a tool bar / row) shows that tool's users: totals, users by team, and every user with hours on the tool and its share of their AI time |
+| No AI use | people with aiHrs = 0 and 15+ present days, lowest active time first. Table shows avg active and avg online |
+| Monthly trend | AI hours (bars) and distinct AI users (line) per month. **Show details:** per month hours, users, people present, adoption (users ÷ people present that month), hours per user, first-time users (first AI use in the period that month) |
+| Power users | **filter:** total AI use in the period (aiHrs) greater / less than a value; then the top N of those by aiHrs (default 10), as a bar chart. **Show details:** every matching AI user with AI hours, average per day, tools, top tool, present days (row → person page). The detail header has a **User** filter (instead of Team) to narrow the page to one person. Tooltip: team and tools. **Click a bar** to open that person's page: AI hours, per present day, share of active time, top tool; AI time by tool and by month; every AI app / site with hours and share; and their working day (online, active, productive, capacity status, present days) |
 
 ---
 
@@ -471,7 +518,7 @@ Notation: *present* = people with ≥ 1 present day; *reliable* = people with �
 
 | # | Rule | Condition | Headline | Tabs | Evidence |
 |---|---|---|---|---|---|
-| A1 | Apps/URLs need category mapping | mis-tag candidate (or category *Uncategorised*) **and** item hours ÷ wd > **1h** | total hours *spent so far* | Overview, Apps | Apps › top 10 |
+| A1 | Apps/URLs need category mapping | (category *Uncategorised*, whatever its tag — it defaults to Neutral — **or** an unproductive mis-tag candidate) **and** item hours ÷ wd > **1h** | total hours *spent so far* | Overview, Apps | Apps › what people do |
 | A2 | People average under 2h active | reliable people with avg active < **2h** | people | Overview, Cohorts | Cohorts › below threshold |
 | A3 | Presence coverage gap | present people with online < **1h** on ≥ **3** present days | people | Overview, Time & Capacity | Overview › presence coverage |
 | A4 | Teams more neutral than productive | team avg productive < avg neutral **and** neutral > **2h/day** | neutral hours so far | Overview, Teams | Teams › composition |
@@ -542,7 +589,7 @@ flowchart LR
   K2 --> TM[Teams › monthly trend]
   K3 --> AA[AI › adoption]
   K4 --> CR[Cohorts › red flags]
-  K5 --> CB[Cohorts › built-in groupings]
+  K5 --> CL
   K6 --> AS[Apps › non-work screening]
 
   AN -- A1 --> AU[Apps › top 10]
@@ -576,6 +623,20 @@ flowchart LR
 | **View members** (cohort card) | Opens that cohort's member page. |
 | **Back to …** | Returns to the previous tab **and the section the detail was opened from** (history of up to 20 steps). |
 | **Bar / label click** (Apps category chart) | Sets the category filter; clicking again clears it. |
+| **Team bar or team row click** | Opens the matching detail page filtered to that team (per-person view). On a detail page it switches the team filter in place. **Back** restores the team filter you had before. |
+
+### Team drill-downs
+
+| Click a team in… | Opens |
+|---|---|
+| Teams › activity patterns (bar) / leaderboard (row) | Activity patterns detail for that team: its people and leaderboard |
+| Teams › composition (bar) / composition table (row) | Composition detail for that team: each person's productive / neutral / unproductive split |
+| Time & Capacity › teams at a glance (dot) / capacity table (row or bar) | Capacity detail for that team: each person against the healthy band |
+| Time & Capacity › breakdown table (row) | Capacity breakdown for that team, per person |
+| Cohorts › red flags by team (bar) | Red-flag page for that team |
+| Cohort member page › members by team (bar) | Switches that page to the team |
+
+Team clicks are active when the client is teams-only (`orgLevel: "team"`), because the bars then are teams.
 
 ### Shared state between tabs
 
@@ -586,8 +647,8 @@ Changing a value on one tab changes the others:
 | Top bar | Period | everything |
 | Top bar | Team | everything (and switches to per-person mode) |
 | Top bar / chart click | Category | Apps & websites tab only |
-| Teams › activity patterns | Under-utilised threshold | Overview under-utilised card, Teams leaderboard |
-| Time & Capacity | Benchmark, variance, metric | decision rules A5, O3, O5, K2 (on Overview and Time & Capacity) |
+| Teams › activity patterns | Activity threshold | Teams baseline and leaderboard |
+| Time & Capacity | Benchmark, band (min / max), metric | Overview under-utilised card, decision rules A5, O3, O5, K2 |
 | Cohorts › red flags detail | Red-flag rules | Overview red-flag card |
 | Cohorts | Custom cohorts | kept while you move between tabs (reset on reload) |
 
@@ -600,6 +661,7 @@ All per-client settings live in `data/<client-id>/client_config.json`. Anything 
 | Setting | Default | Used by |
 |---|---|---|
 | `clientName` | "Client" | sidebar, Data & settings |
+| `orgLevel` | department | `"team"` = teams only: team is the grouping level and labels say Team |
 | `excludeFromTopApps` | Chrome, Edge, Windows Explorer | Apps › what people do |
 | `nonWorkCategories` | Social media, Video / streaming, Gaming, Gambling, Adult | non-work screening, Overview card, cohorts |
 | `aiTools` | 11 tools with name patterns | AI adoption, cohorts, rules |
@@ -608,12 +670,12 @@ All per-client settings live in `data/<client-id>/client_config.json`. Anything 
 | `minGroupSize` | 3 | department / team charts |
 | `unassignedDepartment` | Default | blank departments |
 | `defaults.underThreshold` | active < 3h | Overview card, Teams |
-| `defaults.individualsThreshold` | active < 4h | Cohorts › below threshold, AI › no AI use |
+| `defaults.individualsThreshold` | active < 4h | Cohorts › below threshold |
 | `defaults.redFlag` | active < 2h, 50+ days, all rules | red flags |
 | `defaults.bands` | active, 3h / 6h | built-in activity bands |
 | `defaults.leaderCount` | 5 | leaderboard highlight |
 | `defaults.aiPowerUserCount` | 10 | power users, AI cohort |
-| `defaults.capacity` | online, 7h, ±10% | Time & Capacity, rules A5 O3 O5 K2 |
+| `defaults.capacity` | online, 7h, ±10% (optional explicit `min` / `max`) | Time & Capacity, Overview under-utilised card, rules A5 O3 O5 K2 |
 | `defaults.insightRules` | see [section 6](#6-decision-rules) | all decision rules |
 | `defaults.cohorts` | 4 starter cohorts | Cohorts tab |
 

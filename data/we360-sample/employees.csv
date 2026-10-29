@@ -1,0 +1,201 @@
+Employee ID,Name,Department,Team,Location,Joining Date,Excluded
+EMP1001,Huong Pham,Product Engineering,Product Engineering,Bengaluru,2021-04-22,No
+EMP1002,Jun Santos,Product Engineering,Product Engineering,Singapore,2026-02-16,No
+EMP1003,Ahmad Nair,Product Engineering,Product Engineering,Manila,2023-03-13,No
+EMP1004,Huong Chong,Product Engineering,Product Engineering,Manila,2023-06-06,No
+EMP1005,Rizal Dang,Product Engineering,Product Engineering,Manila,2020-07-24,No
+EMP1006,Wei Nair,Product Engineering,Product Engineering,Manila,2024-12-03,No
+EMP1007,Ahmad Ramos,Product Engineering,Product Engineering,Kuala Lumpur,2023-05-04,No
+EMP1008,Bao Yusof,Product Engineering,Product Engineering,Bengaluru,2020-02-24,No
+EMP1009,Carlo Nguyen,Product Engineering,Product Engineering,Ho Chi Minh City,2021-03-22,No
+EMP1010,Wei Garcia,Product Engineering,Product Engineering,Manila,2021-12-06,No
+EMP1011,Kristine Teo,Product Engineering,Product Engineering,Kuala Lumpur,2023-07-03,No
+EMP1012,Bea Bui,Product Engineering,Product Engineering,Kuala Lumpur,2023-04-24,No
+EMP1013,Nikhil Ramos,Product Engineering,Product Engineering,Ho Chi Minh City,2019-12-06,No
+EMP1014,Quang Nguyen,Product Engineering,Product Engineering,Kuala Lumpur,2020-04-27,No
+EMP1015,Naveen Ng,Product Engineering,Product Engineering,Manila,2018-04-02,No
+EMP1016,Kai Hoang,Product Engineering,Product Engineering,Ho Chi Minh City,2022-04-20,No
+EMP1017,Shahrul Wong,Product Engineering,Product Engineering,Kuala Lumpur,2023-01-23,No
+EMP1018,Khairul Iyer,Product Engineering,Product Engineering,Manila,2024-02-12,No
+EMP1019,Nadia Pillai,Product Engineering,Product Engineering,Ho Chi Minh City,2023-05-08,No
+EMP1020,Lan Ng,Product Engineering,Product Engineering,Kuala Lumpur,2021-03-09,No
+EMP1021,Harish Nair,Product Engineering,Product Engineering,Manila,2017-09-08,No
+EMP1022,Siti Hoang,Product Engineering,Product Engineering,Kuala Lumpur,2021-09-28,No
+EMP1023,Suresh Ng,Product Engineering,Product Engineering,Manila,2024-09-06,No
+EMP1024,Jun Patel,Product Engineering,Product Engineering,Kuala Lumpur,2021-11-16,No
+EMP1025,Quang Patel,Product Engineering,Product Engineering,Kuala Lumpur,2021-03-04,No
+EMP1026,Ganesh Patel,Product Engineering,Product Engineering,Ho Chi Minh City,2025-12-18,No
+EMP1027,Aditya Hoang,Product Engineering,Product Engineering,Kuala Lumpur,2018-11-05,No
+EMP1028,Hui Cruz,Product Engineering,Product Engineering,Kuala Lumpur,2022-01-17,No
+EMP1029,Rafael Santos,Product Engineering,Product Engineering,Ho Chi Minh City,2023-12-06,No
+EMP1030,Shahrul Pillai,Product Engineering,Product Engineering,Bengaluru,2021-01-22,No
+EMP1031,Ahmad Pillai,Product Engineering,Product Engineering,Manila,2025-04-28,No
+EMP1032,Hieu Nguyen,Product Engineering,Product Engineering,Kuala Lumpur,2025-03-12,No
+EMP1033,Divya Pham,Quality Engineering,Quality Engineering,Kuala Lumpur,2021-09-06,No
+EMP1034,Hieu Rao,Quality Engineering,Quality Engineering,Manila,2024-01-16,No
+EMP1035,Nikhil Pham,Quality Engineering,Quality Engineering,Singapore,2025-12-08,No
+EMP1036,Ishaan Teo,Quality Engineering,Quality Engineering,Kuala Lumpur,2023-06-22,No
+EMP1037,Paolo Bui,Quality Engineering,Quality Engineering,Kuala Lumpur,2021-06-23,No
+EMP1038,Bea Reyes,Quality Engineering,Quality Engineering,Kuala Lumpur,2024-05-27,No
+EMP1039,Kai Iyer,Quality Engineering,Quality Engineering,Kuala Lumpur,2025-07-23,No
+EMP1040,Syafiq Lee,Quality Engineering,Quality Engineering,Singapore,2019-03-18,No
+EMP1041,Ling Chong,Quality Engineering,Quality Engineering,Ho Chi Minh City,2018-05-10,No
+EMP1042,Deepa Aziz,Quality Engineering,Quality Engineering,Kuala Lumpur,2020-03-02,No
+EMP1043,Zul Wong,Quality Engineering,Quality Engineering,Manila,2021-04-05,No
+EMP1044,Ganesh Shetty,Quality Engineering,Quality Engineering,Manila,2022-04-12,No
+EMP1045,Harish Pillai,Quality Engineering,Quality Engineering,Singapore,2024-06-12,No
+EMP1046,Rahul Rahman,Quality Engineering,Quality Engineering,Manila,2018-04-05,No
+EMP1047,Rizal Le,Quality Engineering,Quality Engineering,Kuala Lumpur,2025-02-19,No
+EMP1048,Lakshmi Pillai,Quality Engineering,Quality Engineering,Singapore,2025-09-08,No
+EMP1049,Danial Hoang,Quality Engineering,Quality Engineering,Manila,2018-12-14,No
+EMP1050,Naveen Menon,Quality Engineering,Quality Engineering,Kuala Lumpur,2021-10-05,No
+EMP1051,Pooja Dang,Quality Engineering,Quality Engineering,Ho Chi Minh City,2017-09-18,No
+EMP1052,Shahrul Santos,Quality Engineering,Quality Engineering,Singapore,2018-06-15,No
+EMP1053,Ishaan Reyes,Quality Engineering,Quality Engineering,Kuala Lumpur,2020-09-08,No
+EMP1054,Siti Pham,Quality Engineering,Quality Engineering,Kuala Lumpur,2026-01-29,No
+EMP1055,Joanna Cruz,Quality Engineering,Quality Engineering,Bengaluru,2024-04-01,No
+EMP1056,Lakshmi Lee,Quality Engineering,Quality Engineering,Ho Chi Minh City,2022-03-29,No
+EMP1057,Duc Nair,Quality Engineering,Quality Engineering,Bengaluru,2022-02-28,No
+EMP1058,Kai Bui,Quality Engineering,Quality Engineering,Manila,2022-06-06,No
+EMP1059,Siti Joshi,Quality Engineering,Quality Engineering,Singapore,2025-05-15,No
+EMP1060,Lakshmi Hoang,Quality Engineering,Quality Engineering,Kuala Lumpur,2021-10-22,No
+EMP1061,Nadia Abdullah,Innovation Lab,Innovation Lab,Kuala Lumpur,2024-10-03,No
+EMP1062,Kristine Hamid,Innovation Lab,Innovation Lab,Manila,2025-03-31,No
+EMP1063,Ishaan Lee,Innovation Lab,Innovation Lab,Kuala Lumpur,2025-11-03,No
+EMP1064,Hafiz Rao,Innovation Lab,Innovation Lab,Kuala Lumpur,2018-08-06,No
+EMP1065,Zul Kulkarni,Innovation Lab,Innovation Lab,Ho Chi Minh City,2023-10-06,No
+EMP1066,Joanna Tran,Innovation Lab,Innovation Lab,Kuala Lumpur,2022-01-31,No
+EMP1067,Nurul Nair,Innovation Lab,Innovation Lab,Kuala Lumpur,2025-04-30,No
+EMP1068,Lan Bautista,Innovation Lab,Innovation Lab,Kuala Lumpur,2021-11-29,No
+EMP1069,Trang Gupta,Innovation Lab,Innovation Lab,Kuala Lumpur,2017-12-26,No
+EMP1070,Shahrul Lim,Innovation Lab,Innovation Lab,Singapore,2019-07-15,No
+EMP1071,Syafiq Goh,Innovation Lab,Innovation Lab,Manila,2018-10-17,No
+EMP1072,Ishaan Pillai,Innovation Lab,Innovation Lab,Singapore,2025-02-18,No
+EMP1073,Ahmad Nguyen,Innovation Lab,Innovation Lab,Kuala Lumpur,2023-10-16,No
+EMP1074,Danial Lee,Innovation Lab,Innovation Lab,Kuala Lumpur,2020-03-19,No
+EMP1075,Rafael Nguyen,Innovation Lab,Innovation Lab,Kuala Lumpur,2023-06-12,No
+EMP1076,Nurul Lee,Innovation Lab,Innovation Lab,Ho Chi Minh City,2023-04-21,No
+EMP1077,Mei Garcia,Innovation Lab,Innovation Lab,Bengaluru,2022-04-26,No
+EMP1078,Rafael Hamid,Innovation Lab,Innovation Lab,Kuala Lumpur,2025-01-27,No
+EMP1079,Liyana Yusof,Innovation Lab,Innovation Lab,Singapore,2025-07-08,No
+EMP1080,Miguel Goh,Innovation Lab,Innovation Lab,Kuala Lumpur,2026-01-09,No
+EMP1081,Miguel Sharma,Innovation Lab,Innovation Lab,Kuala Lumpur,2025-06-16,No
+EMP1082,Hieu Osman,Innovation Lab,Innovation Lab,Bengaluru,2025-10-13,No
+EMP1083,Karthik Hamid,CRM Delivery,CRM Delivery,Bengaluru,2023-03-31,No
+EMP1084,Karthik Mendoza,CRM Delivery,CRM Delivery,Bengaluru,2024-03-04,No
+EMP1085,Deepa Chong,CRM Delivery,CRM Delivery,Manila,2024-12-09,No
+EMP1086,Divya Wong,CRM Delivery,CRM Delivery,Kuala Lumpur,2019-04-05,No
+EMP1087,Pooja Hamid,CRM Delivery,CRM Delivery,Kuala Lumpur,2023-01-03,No
+EMP1088,Kristine Wong,CRM Delivery,CRM Delivery,Kuala Lumpur,2025-06-26,No
+EMP1089,Hafiz Nguyen,CRM Delivery,CRM Delivery,Ho Chi Minh City,2022-01-17,No
+EMP1090,Priya Hassan,CRM Delivery,CRM Delivery,Ho Chi Minh City,2025-11-17,No
+EMP1091,Deepa Ng,CRM Delivery,CRM Delivery,Singapore,2025-04-15,No
+EMP1092,Vikram Santos,CRM Delivery,CRM Delivery,Kuala Lumpur,2022-04-18,No
+EMP1093,Naveen Patel,CRM Delivery,CRM Delivery,Kuala Lumpur,2024-07-01,No
+EMP1094,Anh Ng,CRM Delivery,CRM Delivery,Ho Chi Minh City,2023-01-11,No
+EMP1095,Thu Lim,CRM Delivery,CRM Delivery,Manila,2018-03-21,No
+EMP1096,Haziq Aziz,CRM Delivery,CRM Delivery,Manila,2026-01-12,No
+EMP1097,Siti Rao,CRM Delivery,CRM Delivery,Kuala Lumpur,2021-10-21,No
+EMP1098,Priya Nguyen,CRM Delivery,CRM Delivery,Singapore,2019-03-06,No
+EMP1099,Aiman Krishnan,CRM Delivery,CRM Delivery,Singapore,2024-11-18,No
+EMP1100,Trang Hamid,CRM Delivery,CRM Delivery,Kuala Lumpur,2018-10-29,No
+EMP1101,Wei Reyes,Service Delivery,Service Delivery,Kuala Lumpur,2020-11-13,No
+EMP1102,Wei Aziz,Service Delivery,Service Delivery,Ho Chi Minh City,2025-03-12,No
+EMP1103,Wei Pham,Service Delivery,Service Delivery,Kuala Lumpur,2023-07-13,No
+EMP1104,Ling Sharma,Service Delivery,Service Delivery,Ho Chi Minh City,2023-05-01,No
+EMP1105,Harish Dang,Service Delivery,Service Delivery,Manila,2020-03-23,No
+EMP1106,Khairul Rao,Service Delivery,Service Delivery,Bengaluru,2025-01-13,No
+EMP1107,Rizal Menon,Service Delivery,Service Delivery,Ho Chi Minh City,2022-06-27,No
+EMP1108,Harish Nguyen,Service Delivery,Service Delivery,Kuala Lumpur,2025-03-03,No
+EMP1109,Linh Cruz,Service Delivery,Service Delivery,Ho Chi Minh City,2025-01-23,No
+EMP1110,Naveen Rahman,Service Delivery,Service Delivery,Kuala Lumpur,2020-11-19,No
+EMP1111,Danial Iyer,Service Delivery,Service Delivery,Kuala Lumpur,2025-02-28,No
+EMP1112,Minh Shetty,Service Delivery,Service Delivery,Ho Chi Minh City,2023-12-11,No
+EMP1113,Mei Hamid,Service Delivery,Service Delivery,Singapore,2025-04-14,No
+EMP1114,Priya Sharma,Service Delivery,Service Delivery,Singapore,2024-09-09,No
+EMP1115,Hieu Hoang,Platform Monitoring,Platform Monitoring,Kuala Lumpur,2023-08-14,No
+EMP1116,Farah Hassan,Platform Monitoring,Platform Monitoring,Ho Chi Minh City,2025-08-29,No
+EMP1117,Divya Chong,Platform Monitoring,Platform Monitoring,Singapore,2020-05-11,No
+EMP1118,Ahmad Lee,Platform Monitoring,Platform Monitoring,Ho Chi Minh City,2022-10-03,No
+EMP1119,Hieu Krishnan,Platform Monitoring,Platform Monitoring,Kuala Lumpur,2023-09-11,No
+EMP1120,Bea Sharma,Platform Monitoring,Platform Monitoring,Kuala Lumpur,2023-11-28,No
+EMP1121,Swathi Nair,Platform Monitoring,Platform Monitoring,Kuala Lumpur,2023-04-19,No
+EMP1122,Trang Menon,Platform Monitoring,Platform Monitoring,Ho Chi Minh City,2022-10-21,No
+EMP1123,Ganesh Ismail,Platform Monitoring,Platform Monitoring,Bengaluru,2023-05-08,No
+EMP1124,Mei Murthy,Platform Monitoring,Platform Monitoring,Kuala Lumpur,2023-08-14,No
+EMP1125,Kavya Ramos,Platform Monitoring,Platform Monitoring,Ho Chi Minh City,2025-12-24,No
+EMP1126,Ganesh Nguyen,Platform Monitoring,Platform Monitoring,Kuala Lumpur,2025-07-21,No
+EMP1127,Ngoc Yusof,Application Support,Application Support,Kuala Lumpur,2019-08-12,No
+EMP1128,Rahul Mendoza,Application Support,Application Support,Kuala Lumpur,2024-12-06,No
+EMP1129,Hui Shetty,Application Support,Application Support,Ho Chi Minh City,2018-11-02,No
+EMP1130,Nurul Wong,Application Support,Application Support,Kuala Lumpur,2017-04-28,No
+EMP1131,Nurul Bui,Application Support,Application Support,Kuala Lumpur,2022-02-21,No
+EMP1132,Priya Aziz,Application Support,Application Support,Kuala Lumpur,2021-12-08,No
+EMP1133,Carlo Bautista,Application Support,Application Support,Kuala Lumpur,2022-04-26,No
+EMP1134,Mark Kulkarni,Application Support,Application Support,Kuala Lumpur,2025-06-30,No
+EMP1135,Ganesh Rao,Application Support,Application Support,Bengaluru,2025-11-03,No
+EMP1136,Minh Menon,Application Support,Application Support,Singapore,2020-07-20,No
+EMP1137,Jun Reddy,Cloud Infrastructure,Cloud Infrastructure,Kuala Lumpur,2018-12-28,No
+EMP1138,Mark Sharma,Cloud Infrastructure,Cloud Infrastructure,Kuala Lumpur,2025-12-04,No
+EMP1139,Kristine Rao,Cloud Infrastructure,Cloud Infrastructure,Ho Chi Minh City,2022-06-16,No
+EMP1140,Aisyah Wong,Cloud Infrastructure,Cloud Infrastructure,Manila,2025-07-10,No
+EMP1141,Priya Wong,Cloud Infrastructure,Cloud Infrastructure,Kuala Lumpur,2022-08-01,No
+EMP1142,Kai Reddy,Cloud Infrastructure,Cloud Infrastructure,Bengaluru,2023-02-27,No
+EMP1143,Linh Le,Managed Operations,Managed Operations,Manila,2025-02-11,No
+EMP1144,Nikhil Dang,Managed Operations,Managed Operations,Singapore,2024-05-08,No
+EMP1145,Izzati Aziz,Managed Operations,Managed Operations,Kuala Lumpur,2025-04-17,No
+EMP1146,Mark Hassan,Managed Operations,Managed Operations,Kuala Lumpur,2022-03-28,No
+EMP1147,Ishaan Hoang,Managed Operations,Managed Operations,Kuala Lumpur,2020-10-19,No
+EMP1148,Trang Mendoza,Managed Operations,Managed Operations,Kuala Lumpur,2024-11-25,No
+EMP1149,Siti Ismail,Managed Operations,Managed Operations,Manila,2025-12-04,No
+EMP1150,Ganesh Garcia,Managed Operations,Managed Operations,Kuala Lumpur,2022-12-08,No
+EMP1151,Hafiz Bautista,People Operations,People Operations,Singapore,2023-11-13,No
+EMP1152,Nikhil Pillai,People Operations,People Operations,Manila,2025-10-06,No
+EMP1153,Hui Pillai,People Operations,People Operations,Kuala Lumpur,2023-08-22,No
+EMP1154,Rahul Lim,People Operations,People Operations,Ho Chi Minh City,2020-02-17,No
+EMP1155,Ling Hamid,People Operations,People Operations,Manila,2023-12-25,No
+EMP1156,Harish Yusof,People Operations,People Operations,Ho Chi Minh City,2019-07-17,No
+EMP1157,Linh Ramos,People Operations,People Operations,Manila,2019-10-14,No
+EMP1158,Lakshmi Bui,People Operations,People Operations,Singapore,2019-10-28,No
+EMP1159,Ishaan Lim,Data & AI Presales,Data & AI Presales,Kuala Lumpur,2024-11-06,No
+EMP1160,Lan Hoang,Data & AI Presales,Data & AI Presales,Singapore,2023-02-20,No
+EMP1161,Rizal Abdullah,Data & AI Presales,Data & AI Presales,Bengaluru,2024-03-27,No
+EMP1162,Paolo Vu,Data & AI Presales,Data & AI Presales,Bengaluru,2025-10-27,No
+EMP1163,Haziq Ismail,Data & AI Presales,Data & AI Presales,Manila,2024-06-20,No
+EMP1164,Khairul Vu,Data & AI Presales,Data & AI Presales,Kuala Lumpur,2024-10-10,No
+EMP1165,Tuan Santos,Data & AI Presales,Data & AI Presales,Singapore,2021-03-29,No
+EMP1166,Sneha Patel,Data & AI Presales,Data & AI Presales,Manila,2020-11-02,No
+EMP1167,Arjun Nguyen,Finance,Finance,Manila,2024-01-24,No
+EMP1168,Syafiq Teo,Finance,Finance,Kuala Lumpur,2023-02-20,No
+EMP1169,Huong Cruz,Finance,Finance,Ho Chi Minh City,2021-10-20,No
+EMP1170,Huong Goh,Finance,Finance,Bengaluru,2021-08-30,No
+EMP1171,Haziq Patel,Finance,Finance,Kuala Lumpur,2021-11-15,No
+EMP1172,Swathi Goh,Finance,Finance,Kuala Lumpur,2022-02-25,No
+EMP1173,Ahmad Yusof,Enterprise Solutions,Enterprise Solutions,Ho Chi Minh City,2025-07-04,No
+EMP1174,Ganesh Dang,Enterprise Solutions,Enterprise Solutions,Singapore,2019-04-25,No
+EMP1175,Kavya Sharma,Enterprise Solutions,Enterprise Solutions,Kuala Lumpur,2020-04-28,No
+EMP1176,Syafiq Mendoza,Enterprise Solutions,Enterprise Solutions,Singapore,2025-11-10,No
+EMP1177,Ngoc Nair,Enterprise Solutions,Enterprise Solutions,Singapore,2025-08-21,No
+EMP1178,Rafael Iyer,Enterprise Solutions,Enterprise Solutions,Ho Chi Minh City,2021-02-01,No
+EMP1179,Rafael Le,ERP Delivery,ERP Delivery,Bengaluru,2023-01-24,No
+EMP1180,Priya Abdullah,ERP Delivery,ERP Delivery,Ho Chi Minh City,2023-08-30,No
+EMP1181,Meera Gupta,ERP Delivery,ERP Delivery,Manila,2024-09-23,No
+EMP1182,Lan Bui,ERP Delivery,ERP Delivery,Ho Chi Minh City,2026-03-18,No
+EMP1183,Pooja Reyes,ERP Delivery,ERP Delivery,Kuala Lumpur,2020-09-02,No
+EMP1184,Swathi Joshi,ERP Delivery,ERP Delivery,Kuala Lumpur,2023-11-08,No
+EMP1185,Bao Wong,Regional Sales,Regional Sales,Manila,2019-04-08,No
+EMP1186,Aditya Garcia,Regional Sales,Regional Sales,Ho Chi Minh City,2025-01-20,No
+EMP1187,Liyana Abdullah,Regional Sales,Regional Sales,Bengaluru,2019-07-11,No
+EMP1188,Minh Reddy,Regional Sales,Regional Sales,Ho Chi Minh City,2023-11-20,No
+EMP1189,Vikram Kulkarni,Regional Sales,Regional Sales,Manila,2023-05-26,No
+EMP1190,Kai Menon,Regional Sales,Regional Sales,Kuala Lumpur,2017-12-04,No
+EMP1191,Mark Rahman,Regional Sales,Regional Sales,Ho Chi Minh City,2021-12-03,No
+EMP1192,Shahrul Rahman,Marketing,Marketing,Kuala Lumpur,2024-01-29,No
+EMP1193,Deepa Bautista,Marketing,Marketing,Ho Chi Minh City,2024-05-20,No
+EMP1194,Haziq Krishnan,Marketing,Marketing,Manila,2025-08-29,No
+EMP1195,Shahrul Garcia,Marketing,Marketing,Bengaluru,2023-11-09,No
+EMP1196,Rohan Teo,Marketing,Marketing,Ho Chi Minh City,2022-11-03,No
+EMP1197,Mei Ng,Mobile Engineering,Mobile Engineering,Kuala Lumpur,2023-02-28,No
+EMP1198,Mark Wong,Mobile Engineering,Mobile Engineering,Manila,2021-12-20,No
+EMP1199,Joanna Gupta,Mobile Engineering,Mobile Engineering,Ho Chi Minh City,2023-04-12,No
+EMP1200,Paolo Hoang,Mobile Engineering,Mobile Engineering,Ho Chi Minh City,2023-11-13,No

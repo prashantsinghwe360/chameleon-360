@@ -14,7 +14,7 @@ const P_COLOR: Record<string, string> = { productive: CHART.productive, neutral:
 const CAT_COLORS = warmPalette;
 
 export function AppsPage() {
-  const { ds, scope: baseSc, stats: basePeople, detail, openDetail, team, teamLabel, category, setCategory, rulesFor } = useDash();
+  const { ds, scope: baseSc, stats: basePeople, detail, openDetail, team, teamLabel, category, setCategory, rulesFor, org } = useDash();
   const catOn = category !== ALL_CATEGORIES;
   // category filter: every number on this page is recomputed on that category's usage only
   const sc = useMemo(() => (catOn ? { ...baseSc, usage: baseSc.usage.filter((u) => u.category === category) } : baseSc), [baseSc, category, catOn]);
@@ -137,7 +137,7 @@ export function AppsPage() {
           note="Rows above the heavy-user line are highlighted. Handle sensitive categories privately under the acceptable-use policy.">
           <DataTable rows={nw.people} max={50} initialSort={{ key: 'h', dir: 'desc' }} rowClass={(r) => (r.nonWorkHrs > heavyCut ? 'row-bad' : '')} cols={[
             { key: 'name', label: 'Person', get: (r) => personLabel(r) },
-            { key: 'dept', label: 'Department', get: (r) => r.emp.department },
+            { key: 'dept', label: org.D, get: (r) => r.emp.department },
             { key: 'team', label: 'Team', get: (r) => r.emp.team },
             ...cfg.nonWorkCategories.map((c) => ({ key: c, label: c, align: 'right' as const, get: (r: PersonStat) => r.nonWorkByCat[c] ?? 0, render: (r: PersonStat) => (r.nonWorkByCat[c] ? r.nonWorkByCat[c].toFixed(1) : '–') })),
             { key: 'h', label: 'Total hrs', align: 'right', get: (r) => r.nonWorkHrs, render: (r) => <b>{r.nonWorkHrs.toFixed(1)}</b> },

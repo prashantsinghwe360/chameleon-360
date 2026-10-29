@@ -5,6 +5,7 @@ Each client is one folder: `data/<client-id>/`. The dashboard reads it through
 
 ```
 data/
+  we360-sample/          default client (from We360_Sample_Workforce_Data_v2.xlsx)
   demo-client/
     employees.csv        required
     daily_activity.csv   required
@@ -12,7 +13,7 @@ data/
     client_config.json   optional - anything left out uses src/data/clientConfig.ts
 ```
 
-**Which client is shown:** `?client=<client-id>` in the URL, else `VITE_CLIENT` at build time, else the first folder.
+**Which client is shown:** `?client=<client-id>` in the URL, else `VITE_CLIENT` at build time (set to `we360-sample` in `.env`), else the first folder.
 
 ## employees.csv — one row per tracked person
 
@@ -20,9 +21,10 @@ data/
 |---|---|---|---|
 | Employee ID | yes | E0001 | joins the three files |
 | Name | yes | Olivia Rhye | |
-| Department | yes | Product Development | blank → `unassignedDepartment` from config |
+| Department | yes* | Product Development | *not needed when `orgLevel` is `"team"`; blank → `unassignedDepartment` |
 | Team | | MSO - Monitoring | blank → department |
 | Designation | | Engineer | |
+| Location | | Bengaluru | |
 | Joining Date | | 2026-03-17 | enables join-month cohorts |
 | Excluded | | Yes / No | test / admin accounts; if the column is missing, names containing "test" or "admin" are excluded |
 
@@ -35,6 +37,7 @@ Keep days with no activity (`Present = No`) - they are needed for presence cover
 | Employee ID | yes | E0001 | |
 | Date | yes | 2026-03-17 | also accepts DD/MM/YYYY |
 | Present | | Yes / No | if missing: present when online time > 0 |
+| Absence Reason | | Leave / Unplanned / No activity tracked | splits presence coverage and absence hours |
 | Online Time | yes | 07:24:10 | HH:MM:SS, MM:SS or seconds |
 | Active Time | yes | 03:12:00 | keyboard / mouse activity |
 | Productive Time | yes | 02:48:00 | |
@@ -60,6 +63,21 @@ Same shape as `ClientConfig` in `src/types.ts`. Typical per-client settings: `cl
 `aiTools` (name patterns per tool), `excludeFromTopApps`, `defaults.capacity` (benchmark), `defaults.insightRules`
 (decision-rule thresholds) and `defaults.cohorts` (starter cohorts). Nested objects are merged with the defaults,
 so a file can be as small as `{ "clientName": "Acme" }`.
+
+## Teams-only clients
+
+Set `"orgLevel": "team"` in `client_config.json` when the client has teams but no departments. The team becomes the
+grouping level everywhere and labels read *Team* instead of *Department*.
+
+## Importing a We360 workbook
+
+```bash
+python3 scripts/import_workbook.py We360_Sample_Workforce_Data_v2.xlsx data/we360-sample
+```
+
+Reads the workbook's calculated values (Employees, Daily, App_Usage, Settings, Client_Config, Apps_Catalog) and writes the
+four files above. The capacity band comes from `Settings` (`capacity_min_h` / `capacity_max_h`), the AI tools from
+`Apps_Catalog`, and the non-work categories from `Client_Config`.
 
 ## Different column names?
 

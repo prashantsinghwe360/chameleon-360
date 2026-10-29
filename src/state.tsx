@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { CapacityConfig, CohortDef, Dataset, Insight, PageKey, PeriodKey, RedFlagConfig, Threshold } from './types';
 import { computeInsightRules } from './lib/insightRules';
 import type { LoadedDataset } from './data/loadDataset';
@@ -10,7 +10,7 @@ export const ALL_CATEGORIES = '__all__';
 
 
 /** Where the user is: a page, optionally a section to scroll to, optionally a detail view. */
-interface Loc { page: PageKey; anchor: string | null; detail: string | null }
+interface Loc { page: PageKey; anchor: string | null; detail: string | null; /** team filter in effect - restored on Back */ team?: string }
 
 interface Ctx {
   ds: Dataset;
@@ -23,6 +23,8 @@ interface Ctx {
   teamLabel: string;
   /** how group charts break down: by department for all teams, by person when one team is selected */
   breakdown: 'department' | 'person';
+  /** org-level wording: 'department' normally, 'team' for teams-only clients */
+  org: { d: string; D: string; ds: string; Ds: string; teamsOnly: boolean };
   /** "department" / "person" for titles; "Department" / "Person" for headers */
   groupNoun: string; GroupNoun: string;
   /** app / website category filter (Apps & websites tab) */
@@ -50,7 +52,11 @@ interface Ctx {
   backLabel: string | null;
   go: (page: PageKey, anchor?: string) => void;
   /** open a full-page detail view; Back returns to `fromSection` on the current page */
-  openDetail: (detail: string, fromSection: string) => void;
+  openDetail: (detail: string, fromSection: string, team?: string) => void;
+  /** a team name if `name` is one of the client's teams (used to make team bars clickable), else null */
+  teamOf: (name: string) => string | null;
+  /** open a detail page filtered to one team; Back restores the previous team filter */
+  openTeam: (team: string, detail: string, fromSection: string) => void;
   back: () => void;
 }
 const DashCtx = createContext<Ctx | null>(null);
@@ -93,21 +99,41 @@ export function DashboardProvider({ ds, meta, children }: { ds: Dataset; meta: O
   };
   const prev = history[history.length - 1];
 
+  const teamSet = useMemo(() => new Set(teams.map((t) => t.name)), [teams]);
+  // the Teams tab compares all teams; the team filter lives on its detail pages
+  useEffect(() => {
+    if (loc.page === 'teams' && !loc.detail && team !== ALL_TEAMS) setTeam(ALL_TEAMS);
+  }, [loc.page, loc.detail, team]);
+  const teamsOnly = ds.config.orgLevel === 'team';
+  const org = teamsOnly
+    ? { d: 'team', D: 'Team', ds: 'teams', Ds: 'Teams', teamsOnly }
+    : { d: 'department', D: 'Department', ds: 'departments', Ds: 'Departments', teamsOnly };
   const value: Ctx = {
     ds, meta, period, setPeriod, team, setTeam, teams, teamLabel: team === ALL_TEAMS ? 'all teams' : team,
     breakdown: team === ALL_TEAMS ? 'department' : 'person',
-    groupNoun: team === ALL_TEAMS ? 'department' : 'person', GroupNoun: team === ALL_TEAMS ? 'Department' : 'Person', category, setCategory, categories, scope, stats, reliable, under, setUnder, redFlag, setRedFlag, cohorts, setCohorts, capacityCfg, setCapacityCfg, rules,
+    org,
+    groupNoun: team === ALL_TEAMS ? org.d : 'person', GroupNoun: team === ALL_TEAMS ? org.D : 'Person', category, setCategory, categories, scope, stats, reliable, under, setUnder, redFlag, setRedFlag, cohorts, setCohorts, capacityCfg, setCapacityCfg, rules,
     rulesFor: (pg, tones) => rules.filter((r) => r.pages?.includes(pg) && (!tones || tones.includes(r.tone))),
     page: loc.page, detail: loc.detail,
     anchor: loc.anchor ? `${loc.anchor}#${loc.n}` : null,
     canGoBack: history.length > 0,
-    backLabel: prev ? PAGE_TITLE[prev.page] : null,
-    go: (page, anchor) => move({ page, anchor: anchor ?? null, detail: null }, { page: loc.page, anchor: null, detail: loc.detail }),
-    openDetail: (detail, fromSection) => move({ page: loc.page, anchor: null, detail }, { page: loc.page, anchor: fromSection, detail: null }),
+    backLabel: prev ? (prev.detail ? `${PAGE_TITLE[prev.page]} details` : PAGE_TITLE[prev.page]) : null,
+    go: (page, anchor) => move({ page, anchor: anchor ?? null, detail: null }, { page: loc.page, anchor: null, detail: loc.detail, team }),
+    openDetail: (detail, fromSection, toTeam) => {
+      // Back returns to where you were: the tab section, or the detail page you opened this from
+      move({ page: loc.page, anchor: null, detail }, { page: loc.page, anchor: fromSection, detail: loc.detail, team });
+      if (toTeam) setTeam(toTeam);
+    },
+    teamOf: (name) => (teamSet.has(name) ? name : null),
+    openTeam: (toTeam, detail, fromSection) => {
+      move({ page: loc.page, anchor: null, detail }, { page: loc.page, anchor: fromSection, detail: null, team });
+      setTeam(toTeam);
+    },
     back: () => {
       if (!prev) return;
       setHistory((h) => h.slice(0, -1));
       setLoc((s) => ({ ...prev, n: s.n + 1 }));
+      if (prev.team !== undefined) setTeam(prev.team);
     },
   };
   return <DashCtx.Provider value={value}>{children}</DashCtx.Provider>;

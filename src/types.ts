@@ -38,6 +38,8 @@ export interface DailyRecord {
   neutralSec: number;
   unproductiveSec: number;
   spanSec?: number;            // punch-in -> punch-out (for capacity lens)
+  /** why the person was not present, e.g. Leave / Unplanned / No activity tracked */
+  absenceReason?: string;
 }
 
 export type Productivity = 'productive' | 'neutral' | 'unproductive';
@@ -61,6 +63,8 @@ export interface AppUsageRecord {
 export interface ClientConfig {
   clientName: string;
   vendorName: string;
+  /** 'team' when the client has teams only - the adapter then uses the team as the grouping level and labels say Team */
+  orgLevel?: 'department' | 'team';
   /** Apps/urls hidden from "top apps" (generic browser chrome, file explorer). */
   excludeFromTopApps: string[];
   /** Categories counted as non-work screening. */
@@ -172,7 +176,8 @@ export interface InsightRulesConfig {
 }
 
 /** Daily capacity benchmark: hours per present day on a metric, +/- variance % = healthy band. */
-export interface CapacityConfig { metric: MetricKey; benchmark: number; variancePct: number }
+/** min / max, when given, set the healthy band exactly; otherwise it is benchmark ± variancePct. */
+export interface CapacityConfig { metric: MetricKey; benchmark: number; variancePct: number; min?: number; max?: number }
 
 /* ------------------------------ custom cohorts ------------------------------ */
 

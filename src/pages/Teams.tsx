@@ -15,8 +15,16 @@ import { slate } from '../theme/tokens';
 
 
 export function TeamsPage() {
-  const { ds, scope, stats, under, setUnder, detail, openDetail, team, teamLabel, rulesFor, breakdown, groupNoun, GroupNoun } = useDash();
+  const { ds, scope, stats, under, setUnder, detail, openDetail, team, teamLabel, rulesFor, breakdown, groupNoun, GroupNoun, org: orgL, teamOf, openTeam, setTeam } = useDash();
   const perPerson = breakdown === 'person';
+  /** clicking a team bar / row: from the tab open the detail page for that team; on a detail page switch its filter */
+  const drill = (name: string | undefined, to: string) => {
+    const t = name && !perPerson ? teamOf(name) : null;
+    if (!t) return;
+    if (detail) setTeam(t); else openTeam(t, to, to);
+  };
+  const barName = (d: { name?: string; payload?: { name?: string } }) => d?.payload?.name ?? d?.name;
+  const teamClicks = !perPerson && orgL.teamsOnly;
   const cfg = ds.config;
   const [lbChoice, setLbChoice] = useState<'department' | 'team'>('department');
   // with one team selected the leaderboard ranks people
@@ -62,14 +70,15 @@ export function TeamsPage() {
         <div className={perPerson ? 'chart-scroll' : undefined}>
           <div style={perPerson ? { minWidth: Math.max(600, patterns.length * 34) } : undefined}>
           <ResponsiveContainer width="100%" height={h}>
-            <ComposedChart data={patterns} margin={{ top: 10, right: 10, bottom: 70, left: 40 }}>
+            <ComposedChart data={patterns} margin={{ top: 10, right: 10, bottom: 70, left: 40 }} maxBarSize={56}>
               <CartesianGrid stroke={CHART.grid} vertical={false} />
               <XAxis dataKey="name" {...axisProps} angle={-35} textAnchor="end" interval={0} height={80} />
               <YAxis yAxisId="h" {...axisProps} unit="h" domain={[0, hTop]} ticks={Array.from({ length: hTop + 1 }, (_, i) => i)} />
               {!perPerson && <YAxis yAxisId="c" orientation="right" {...axisProps} allowDecimals={false} />}
               <Tooltip />
               <Legend verticalAlign="top" height={28} />
-              <Bar yAxisId="h" dataKey="value" name={`Avg. ${METRIC_LABEL[under.metric].toLowerCase()} hrs/day`} fill={CHART[under.metric]} radius={[3, 3, 0, 0]}>
+              <Bar yAxisId="h" dataKey="value" name={`Avg. ${METRIC_LABEL[under.metric].toLowerCase()} hrs/day`} fill={CHART[under.metric]} radius={[3, 3, 0, 0]}
+                cursor={teamClicks ? 'pointer' : undefined} onClick={(d: { name?: string; payload?: { name?: string } }) => drill(barName(d), 'patterns')}>
                 {perPerson && patterns.map((p) => <Cell key={p.name} fill={compare(p.value, under.op, under.value) ? CHART.under : CHART[under.metric]} />)}
               </Bar>
               <ReferenceLine yAxisId="h" y={under.value} stroke={CHART.under} strokeDasharray="5 4" strokeWidth={1.5}
@@ -101,9 +110,9 @@ export function TeamsPage() {
               <YAxis type="category" dataKey="name" {...axisProps} width={160} interval={0} tick={{ fill: CHART.axis, fontSize: 11 }} />
               <Tooltip formatter={(v: number) => `${v}%`} />
               <Legend verticalAlign="top" height={28} />
-              <Bar dataKey="Productive" stackId="a" fill={CHART.productive} />
-              <Bar dataKey="Neutral" stackId="a" fill={CHART.neutral} />
-              <Bar dataKey="Unproductive" stackId="a" fill={CHART.unproductive} />
+              <Bar dataKey="Productive" stackId="a" fill={CHART.productive} cursor={teamClicks ? 'pointer' : undefined} onClick={(d: { name?: string; payload?: { name?: string } }) => drill(barName(d), 'composition')} />
+              <Bar dataKey="Neutral" stackId="a" fill={CHART.neutral} cursor={teamClicks ? 'pointer' : undefined} onClick={(d: { name?: string; payload?: { name?: string } }) => drill(barName(d), 'composition')} />
+              <Bar dataKey="Unproductive" stackId="a" fill={CHART.unproductive} cursor={teamClicks ? 'pointer' : undefined} onClick={(d: { name?: string; payload?: { name?: string } }) => drill(barName(d), 'composition')} />
             </BarChart>
           </ResponsiveContainer>
   );
@@ -113,23 +122,24 @@ export function TeamsPage() {
 
   if (detail === 'patterns') return (
     <>
-      <DetailHeader title={perPerson ? `${team}: activity by person` : 'Department-wise activity patterns'} lede={`Average hours per present day and people ${thresholdText(under)}, for ${teamLabel}.`} />
+      <DetailHeader title={perPerson ? `${team}: activity by person` : `${orgL.D}-wise activity patterns`} lede={`Average hours per present day and people ${thresholdText(under)}, for ${teamLabel}.`} />
       <div className="grid">
-        <Section title={perPerson ? 'People, lowest to highest' : 'Departments, lowest to highest'} tools={<ThresholdControl value={under} onChange={setUnder} prefix="Count people averaging" />}>
+        <Section title={perPerson ? 'People, lowest to highest' : `${orgL.Ds}, lowest to highest`} tools={<ThresholdControl value={under} onChange={setUnder} prefix="Count people averaging" />}>
           {patternsChart(400)}
         </Section>
         <Section title={perPerson ? `${team} leaderboard` : 'Team leaderboard'}
           tools={<>
-            {!perPerson && <Select label="Leaderboard groups" value={lbChoice} onChange={setLbChoice} options={[{ value: 'department', label: 'By department' }, { value: 'team', label: 'By team' }]} />}
+            {!perPerson && !orgL.teamsOnly && <Select label="Leaderboard groups" value={lbChoice} onChange={setLbChoice} options={[{ value: 'department', label: 'By department' }, { value: 'team', label: 'By team' }]} />}
             <span className="ctl-label">Highlight top / bottom</span>
             <NumberField label="Highlight count" value={leaders} step={1} min={1} onChange={(v) => setLeaders(Math.max(1, Math.round(v)))} />
           </>}
           note={`Ranked by average ${METRIC_LABEL[under.metric].toLowerCase()} hours per present day, the metric set on the graph. An activity signal from computer use, not a performance rating.`}>
           <div className="legend-inline"><span className="chip good">Top {n}</span><span className="chip bad">Bottom {n}</span></div>
-          <DataTable key={`${lbGroup}${under.metric}`} rows={ranked} rowClass={(_, i) => (i < n ? 'row-good' : i >= ranked.length - n ? 'row-bad' : '')}
+          <DataTable key={`${lbGroup}${under.metric}`} rows={ranked}
+            onRowClick={(r) => drill(r.name, 'patterns')} rowTitle={(r) => (teamClicks && teamOf(r.name) ? `Show ${r.name}'s people` : undefined)} rowClass={(_, i) => (i < n ? 'row-good' : i >= ranked.length - n ? 'row-bad' : '')}
             cols={[
               { key: 'rank', label: '#', get: (r) => r.rank },
-              { key: 'name', label: lbGroup === 'person' ? 'Person' : lbGroup === 'department' ? 'Department' : 'Team', get: (r) => r.name },
+              { key: 'name', label: lbGroup === 'person' ? 'Person' : lbGroup === 'department' ? orgL.D : 'Team', get: (r) => r.name },
               ...(perPerson ? [] : [{ key: 'people', label: 'People', align: 'right' as const, get: (r: GroupStat) => r.people }]),
               ...(['active', 'productive', 'online'] as const).map((m) => ({
                 key: m, label: `Avg ${METRIC_LABEL[m].toLowerCase()} hrs`, align: 'right' as const, get: (r: GroupStat) => r.avg[m],
@@ -187,11 +197,12 @@ export function TeamsPage() {
 
   if (detail === 'composition') return (
     <>
-      <DetailHeader title="Activity & productivity composition" lede={`Share of each ${groupNoun}'s active time by productivity tag, for ${teamLabel}.`} />
+      <DetailHeader title={perPerson ? `${team}: composition by person` : 'Activity & productivity composition'} lede={`Share of each ${groupNoun}'s active time by productivity tag, for ${teamLabel}.`} />
       <div className="grid">
-        <Section title="Composition, most productive first">{compChart()}</Section>
-        <Section title={`All ${depts.length} ${perPerson ? 'people' : 'departments'}`} note="Shares use the client's productivity tagging; a high unproductive share often points to a mis-tagged work tool.">
-          <DataTable rows={depts} initialSort={{ key: 'prod', dir: 'desc' }} rowClass={(r) => (r.unprodPct > 5 ? 'row-bad' : '')} cols={[
+        <Section title={perPerson ? 'People, most productive first' : 'Composition, most productive first'}>{compChart()}</Section>
+        <Section title={`All ${depts.length} ${perPerson ? 'people' : orgL.ds}`} note="Shares use the client's productivity tagging; a high unproductive share often points to a mis-tagged work tool.">
+          <DataTable rows={depts} initialSort={{ key: 'prod', dir: 'desc' }}
+            onRowClick={(r) => drill(r.name, 'composition')} rowTitle={(r) => (teamClicks && teamOf(r.name) ? `Show ${r.name}'s people` : undefined)} rowClass={(r) => (r.unprodPct > 5 ? 'row-bad' : '')} cols={[
             { key: 'name', label: GroupNoun, get: (r) => r.name },
             ...(perPerson ? [] : [{ key: 'people', label: 'People', align: 'right' as const, get: (r: GroupStat) => r.people }]),
             { key: 'prod', label: 'Productive %', align: 'right', get: (r) => r.prodPct, render: (r) => fmtPct(r.prodPct, 1) },
@@ -208,15 +219,15 @@ export function TeamsPage() {
 
   return (
     <>
-      <PageHeader title="Teams" lede={perPerson ? `${team}: how each person compares and how the month-by-month picture moves. Open the activity patterns for the leaderboard.` : 'How departments and teams compare and how the month-by-month picture moves. Open the activity patterns for the team leaderboard.'} />
+      <PageHeader filters="period" title="Teams" lede={perPerson ? `${team}: how each person compares and how the month-by-month picture moves. Open the activity patterns for the leaderboard.` : orgL.teamsOnly ? 'How teams compare and how the month-by-month picture moves. Open the activity patterns for the team leaderboard.' : 'How departments and teams compare and how the month-by-month picture moves. Open the activity patterns for the team leaderboard.'} />
       <InsightPanel items={insights} />
 
       <div className="grid">
-        <Section id="patterns" title={perPerson ? `${team}: activity by person` : 'Department-wise activity patterns'} onOpen={() => openDetail('patterns', 'patterns')}
+        <Section id="patterns" title={perPerson ? `${team}: activity by person` : `${orgL.D}-wise activity patterns`} onOpen={() => openDetail('patterns', 'patterns')}
           tools={<ThresholdControl value={under} onChange={setUnder} prefix="Count people averaging" />}
           note={perPerson
             ? `Each bar is one person's average ${METRIC_LABEL[under.metric].toLowerCase()} hours per present day; coral bars are ${thresholdText(under)}. ${depts.length} people in ${team}.`
-            : `Bars: average ${METRIC_LABEL[under.metric].toLowerCase()} hours per present day. Line: people whose average is ${thresholdText(under)}. ${depts.length} departments with ${cfg.minGroupSize}+ people.`}>
+            : `Bars: average ${METRIC_LABEL[under.metric].toLowerCase()} hours per present day. Line: people whose average is ${thresholdText(under)}. ${depts.length} ${orgL.ds} with ${cfg.minGroupSize}+ people.${teamClicks ? ' Select a team bar to see its people.' : ''}`}>
           {patternsChart(340)}
         </Section>
 
@@ -226,7 +237,7 @@ export function TeamsPage() {
         </Section>
 
         <Section id="composition" span={5} title={perPerson ? 'Composition by person' : 'Activity & productivity composition'} onOpen={() => openDetail('composition', 'composition')}
-          note={`Share of each ${groupNoun}'s active time by the client's productivity tagging, normalised to 100%.`}>
+          note={`Share of each ${groupNoun}'s active time by the client's productivity tagging, normalised to 100%.${teamClicks ? ' Select a team bar to see its people.' : ''}`}>
           {compChart()}
         </Section>
 

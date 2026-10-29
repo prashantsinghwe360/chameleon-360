@@ -24,8 +24,14 @@ export const PEOPLE_DETAILS = ['threshold', 'unproductive', 'redflags'];
  * Lives inside the Cohorts tab.
  */
 export function PeopleSections() {
-  const { ds, scope, stats, redFlag, setRedFlag, detail, openDetail, breakdown, team } = useDash();
+  const { ds, scope, stats, redFlag, setRedFlag, detail, openDetail, breakdown, team, org, teamOf, openTeam, setTeam } = useDash();
   const perPerson = breakdown === 'person';
+  /** team bar: from the tab open the red-flag page for that team; on the detail page switch its filter */
+  const drillFlags = (name?: string) => {
+    const t = name && !perPerson && org.teamsOnly ? teamOf(name) : null;
+    if (!t) return;
+    if (detail) setTeam(t); else openTeam(t, 'redflags', 'redflags');
+  };
   const cfg = ds.config;
   const [t, setT] = useState(cfg.defaults.individualsThreshold);
   const minDays = cfg.minPresentDaysForLists;
@@ -96,7 +102,8 @@ export function PeopleSections() {
         <XAxis type="number" {...axisProps} allowDecimals={perPerson} unit={perPerson ? 'h' : undefined} />
         <YAxis type="category" dataKey="name" {...axisProps} width={180} interval={0} />
         <Tooltip formatter={(v: number) => (perPerson ? [`${v}h`, 'Avg active / day'] : [`${v} people`, 'Flagged'])} />
-        <Bar dataKey="people" fill={CHART.under} radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12 }} />
+        <Bar dataKey="people" fill={CHART.under} radius={[0, 3, 3, 0]} label={{ position: 'right', fill: CHART.axis, fontSize: 12 }}
+          cursor={!perPerson && org.teamsOnly ? 'pointer' : undefined} onClick={(d: { name?: string; payload?: { name?: string } }) => drillFlags(d?.payload?.name ?? d?.name)} />
       </BarChart>
     </ResponsiveContainer>
   ) : <p className="empty">Nobody meets these rules.</p>;
@@ -105,7 +112,7 @@ export function PeopleSections() {
   const thresholdTable = (
     <DataTable key={`${t.metric}${t.op}`} rows={list} max={50} initialSort={{ key: t.metric, dir: asc ? 'asc' : 'desc' }} cols={[
       { key: 'name', label: 'Name', get: (r) => r.emp.name },
-      { key: 'dept', label: 'Department', get: (r) => r.emp.department },
+      { key: 'dept', label: org.D, get: (r) => r.emp.department },
       ...(['active', 'productive', 'online'] as const).map((m) => ({
         key: m, label: `${METRIC_LABEL[m]} hrs/day`, align: 'right' as const, get: (r: PersonStat) => r.avg[m],
         render: (r: PersonStat) => (m === t.metric ? <b>{fmtH(r.avg[m], 2)}</b> : fmtH(r.avg[m], 2)),
@@ -117,7 +124,7 @@ export function PeopleSections() {
   const unprodTable = (
     <DataTable rows={unprodPeople} max={50} initialSort={{ key: 'u', dir: 'desc' }} cols={[
       { key: 'name', label: 'Name', get: (r) => r.emp.name },
-      { key: 'dept', label: 'Department', get: (r) => r.emp.department },
+      { key: 'dept', label: org.D, get: (r) => r.emp.department },
       { key: 'u', label: 'Unproductive hrs', align: 'right', get: (r) => r.unproductiveHrs, render: (r) => fmtH(r.unproductiveHrs, 1) },
       { key: 'w', label: 'Of which work tools', align: 'right', get: workHrs, render: (r) => fmtH(workHrs(r), 1) },
       { key: 'top', label: 'Largest item', get: (r) => r.topUnproductive ?? '', render: (r) => <>{r.topUnproductive}{r.topUnproductive && cands.has(r.topUnproductive) && <span className="chip warn">Work tool</span>}</> },
@@ -127,7 +134,7 @@ export function PeopleSections() {
   const flagTable = (
     <DataTable rows={flags} max={50} initialSort={{ key: 'a', dir: 'asc' }} empty="Nobody meets these rules." cols={[
       { key: 'name', label: 'Name', get: (r) => r.s.emp.name },
-      { key: 'dept', label: 'Department', get: (r) => r.s.emp.department },
+      { key: 'dept', label: org.D, get: (r) => r.s.emp.department },
       { key: 'a', label: 'Avg active', align: 'right', get: (r) => r.s.avg.active, render: (r) => fmtH(r.s.avg.active, 2) },
       { key: 'p', label: 'Avg productive', align: 'right', get: (r) => r.s.avg.productive, render: (r) => fmtH(r.s.avg.productive, 2) },
       { key: 'd', label: 'Days', align: 'right', get: (r) => r.s.presentDays },
@@ -206,7 +213,7 @@ export function PeopleSections() {
       <DetailHeader title="Red-flag employees" lede={`${fmtN(flags.length)} people meet: ${ruleText || 'no rules enabled'} (${redFlag.minPresentDays}+ present days).`} />
       <div className="grid">
         <Section title="Rules" note="Every enabled rule uses data already in the dashboard. Add rules as new red-flag metrics are agreed.">{ruleBuilder}</Section>
-        <Section title={perPerson ? `Flagged people in ${team} (avg active / day)` : 'Flagged people by department'}>{flagChart}</Section>
+        <Section title={perPerson ? `Flagged people in ${team} (avg active / day)` : `Flagged people by ${org.d}`}>{flagChart}</Section>
         <Section title={`All ${fmtN(flags.length)} flagged people`}
           note="Sustained low activity can reflect role mismatch, disengagement, a device or tracking issue, or offline work - a starting point for a conversation.">
           {flagTable}
@@ -231,7 +238,7 @@ export function PeopleSections() {
         </Section>
 
         <Section id="redflags" span={6} title="Red-flag employees" onOpen={() => openDetail('redflags', 'redflags')}
-          note={`${perPerson ? `Flagged people in ${team}, by average active hours a day` : 'Flagged people by department'}. Rule: ${ruleText || 'none enabled'}. Edit rules in the detail view.`}>
+          note={`${perPerson ? `Flagged people in ${team}, by average active hours a day` : `Flagged people by ${org.d}`}. Rule: ${ruleText || 'none enabled'}. Edit rules in the detail view.`}>
           <div className="flag-count"><b>{fmtN(flags.length)}</b> people flagged</div>
           {shortPeriod && <div className="notice">Only {scope.range.workingDays} working days in this period - the rule needs {redFlag.minPresentDays}. Open the details to adjust.</div>}
           {flagChart}

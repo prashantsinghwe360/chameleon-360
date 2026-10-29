@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { useDash } from '../state';
+import { family } from '../theme/tokens';
 import { CHART, InsightPanel, Kpi, PageHeader, Section } from '../components/ui';
 import {
-  aiAdoption, coverage, fmtH, fmtN, fmtPct, groupStats, monthlyTrend, nonWork, orgAvg,
-  redFlags, thresholdText, topItems, compare,
+  aiAdoption, capacityBand, coverage, fmtH, fmtN, fmtPct, groupStats, monthlyTrend, nonWork, orgAvg,
+  redFlags, topItems,
 } from '../lib/metrics';
 
 export function OverviewPage() {
-  const { ds, scope, stats, reliable, under, redFlag, go, rulesFor, teamLabel } = useDash();
+  const { ds, scope, stats, reliable, under, redFlag, go, rulesFor, teamLabel, capacityCfg } = useDash();
   const cfg = ds.config;
 
   const d = useMemo(() => {
@@ -16,7 +17,8 @@ export function OverviewPage() {
     const avg = orgAvg(stats);
     const ai = aiAdoption(scope, stats);
     const flags = redFlags(stats, redFlag, cfg.defaults.individualsThreshold);
-    const underN = reliable.filter((s) => compare(s.avg[under.metric], under.op, under.value)).length;
+    const band = capacityBand(capacityCfg);
+    const underN = reliable.filter((s) => s.avg[capacityCfg.metric] < band.min).length;
     const nw = nonWork(scope, stats, 10);
     const depts = groupStats(stats, 'department', under, cfg.minGroupSize, cfg.minPresentDaysForLists);
     const unprod = topItems(scope, { productivity: 'unproductive', n: 15 });
@@ -32,16 +34,20 @@ export function OverviewPage() {
       { label: 'Under 50% of days', people: rates.filter((x) => x < 0.5).length, color: CHART.under },
     ];
     return { cov, avg, ai, flags, underN, nw, depts, unprod, unassigned, trend, presence };
-  }, [scope, stats, reliable, under, redFlag, cfg]);
+  }, [scope, stats, reliable, under, redFlag, cfg, capacityCfg]);
 
   const underPct = reliable.length ? (d.underN / reliable.length) * 100 : 0;
   const tools = d.ai.byTool.map((t) => t.tool);
 
   const actNow = rulesFor('overview', ['priority']);
 
+  const reasonColor = (r: string) => (/leave|holiday/i.test(r) ? family.lavender.light : /track|signal/i.test(r) ? CHART.missing : family.coralRed.light);
+  const reasons = Object.entries(d.cov.byReason).sort((a, b) => b[1] - a[1]);
   const pie = [
-    { name: 'With a punch / online signal', value: d.cov.present, color: CHART.present },
-    { name: 'No signal (leave, holiday, missing data)', value: d.cov.missing, color: CHART.missing },
+    { name: 'Present (punch / online signal)', value: d.cov.present, color: CHART.present },
+    ...(reasons.length === 1 && reasons[0][0] === 'No presence signal'
+      ? [{ name: 'No signal (leave, holiday, missing data)', value: d.cov.missing, color: CHART.missing }]
+      : reasons.map(([r, n]) => ({ name: r, value: n, color: reasonColor(r) }))),
   ];
 
   return (
@@ -56,7 +62,7 @@ export function OverviewPage() {
         <Kpi value={fmtH(d.avg.active)} label="Avg. active hrs / present day" sub={`Online ${fmtH(d.avg.online)} · productive ${fmtH(d.avg.productive)}`} onClick={() => go('teams', 'monthly')} />
         <Kpi value={fmtPct(d.ai.adoptionPct)} label="AI tool adoption" tone="good" sub={`${tools.slice(0, 3).join(', ')}${tools.length > 3 ? ` + ${tools.length - 3} more` : ''}`} onClick={() => go('ai', 'adoption')} />
         <Kpi value={fmtN(d.flags.length)} label="Red-flag individuals" tone="bad" sub={redFlag.minPresentDays > scope.range.workingDays ? `Rule needs ${redFlag.minPresentDays}+ days - adjust on Cohorts` : 'Need a closer look'} onClick={() => go('cohorts', 'redflags')} />
-        <Kpi value={fmtPct(underPct)} label="Under-utilised workforce" tone="warn" sub={`${thresholdText(under)}, of ${fmtN(reliable.length)} people with ${cfg.minPresentDaysForLists}+ days`} onClick={() => go('cohorts', 'builtin')} />
+        <Kpi value={fmtPct(underPct)} label="Under-utilised workforce" tone="warn" sub={`${capacityCfg.metric} < ${capacityBand(capacityCfg).min}h/day (capacity band), of ${fmtN(reliable.length)} people with ${cfg.minPresentDaysForLists}+ days`} onClick={() => go('capacity', 'lens')} />
         <Kpi value={fmtPct(d.nw.sharePct, 2)} label="Non-work browsing" tone="good" sub={`${fmtN(d.nw.total)} hrs - ${d.nw.sharePct < 1 ? 'negligible' : 'worth a look'}`} onClick={() => go('apps', 'screening')} />
       </div>
 

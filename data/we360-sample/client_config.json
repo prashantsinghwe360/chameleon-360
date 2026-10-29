@@ -1,0 +1,62 @@
+{
+  "clientName": "We360 Sample Client",
+  "vendorName": "We360.ai",
+  "orgLevel": "team",
+  "excludeFromTopApps": [
+    "Google Chrome",
+    "Microsoft Edge"
+  ],
+  "nonWorkCategories": [
+    "Social media",
+    "Video / streaming",
+    "Gaming",
+    "Gambling",
+    "Adult",
+    "Personal browsing"
+  ],
+  "aiTools": {
+    "Microsoft 365 Copilot": [
+      "microsoft 365 copilot"
+    ],
+    "Microsoft Copilot": [
+      "copilot.microsoft.com"
+    ],
+    "ChatGPT": [
+      "chatgpt.com"
+    ],
+    "Claude": [
+      "claude.ai"
+    ],
+    "Gemini": [
+      "gemini.google.com"
+    ],
+    "NotebookLM": [
+      "notebooklm.google.com"
+    ],
+    "Perplexity": [
+      "www.perplexity.ai"
+    ],
+    "DeepSeek": [
+      "chat.deepseek.com"
+    ]
+  },
+  "aiHubTool": "Microsoft 365 Copilot",
+  "minPresentDaysForLists": 15,
+  "minGroupSize": 3,
+  "defaults": {
+    "capacity": {
+      "metric": "online",
+      "benchmark": 7.0,
+      "variancePct": 10.7,
+      "min": 6.25,
+      "max": 7.75
+    },
+    "insightRules": {
+      "severeCategories": [
+        "Gaming",
+        "Adult",
+        "Gambling"
+      ]
+    }
+  }
+}

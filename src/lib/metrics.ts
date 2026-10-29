@@ -3,7 +3,7 @@
  * Pages never hard-code client values.
  * ===================================================================== */
 import type {
-  AppUsageRecord, CohortDef, CohortMeasure, CohortRule, Comparator, DailyRecord, Dataset, Employee, MetricKey,
+  AppUsageRecord, CapacityConfig, CohortDef, CohortMeasure, CohortRule, Comparator, DailyRecord, Dataset, Employee, MetricKey,
   PeriodKey, PersonMeasure, RedFlagConfig, Threshold,
 } from '../types';
 
@@ -23,10 +23,10 @@ export interface Range { start: string; end: string; dataStart: string; clipped:
 export function periodRange(ds: Dataset, period: PeriodKey): Range {
   let min = '9999', max = '0000';
   for (const d of ds.daily) { if (d.date < min) min = d.date; if (d.date > max) max = d.date; }
-  const e = new Date(max + 'T00:00:00Z');
-  const s = new Date(e);
-  s.setUTCMonth(s.getUTCMonth() - PERIOD_MONTHS[period]);
+  // start = (day after end) - N months, so 30 Sep with 6 months gives 1 Apr (not 31 Mar)
+  const s = new Date(max + 'T00:00:00Z');
   s.setUTCDate(s.getUTCDate() + 1);
+  s.setUTCMonth(s.getUTCMonth() - PERIOD_MONTHS[period]);
   const start = s.toISOString().slice(0, 10);
   const clipped = start < min;
   const realStart = clipped ? min : start;
@@ -188,8 +188,13 @@ export const MEASURE_LABEL: Record<PersonMeasure, { label: string; unit: string 
 /* ------------------------------ coverage ------------------------------ */
 export function coverage(sc: Scope) {
   const total = sc.daily.length;
-  const present = sc.daily.filter((d) => d.present).length;
-  return { total, present, missing: total - present, pct: total ? (present / total) * 100 : 0 };
+  let present = 0;
+  const byReason: Record<string, number> = {};
+  for (const d of sc.daily) {
+    if (d.present) present++;
+    else { const k = d.absenceReason || 'No presence signal'; byReason[k] = (byReason[k] ?? 0) + 1; }
+  }
+  return { total, present, missing: total - present, pct: total ? (present / total) * 100 : 0, byReason };
 }
 
 /* ------------------------------ org avg ------------------------------ */
@@ -331,6 +336,50 @@ export function cohortCounts(sc: Scope, stats: PersonStat[], by: CohortBy, bands
 }
 
 /* ------------------------------ time & capacity ------------------------------ */
+/** Healthy capacity band: explicit min / max when configured, else benchmark ± variance. */
+export function capacityBand(cap: CapacityConfig) {
+  const min = cap.min ?? +(cap.benchmark * (1 - cap.variancePct / 100)).toFixed(2);
+  const max = cap.max ?? +(cap.benchmark * (1 + cap.variancePct / 100)).toFixed(2);
+  return { min, max, status: (v: number): 'under' | 'healthy' | 'over' => (v < min ? 'under' : v > max ? 'over' : 'healthy') };
+}
+
+/**
+ * Capacity breakdown (sheet: Org_Summary / Team_Monthly / Capacity_Employee):
+ *   Ideal    = benchmark x person-days in the period (headcount x working days)
+ *   Absence  = benchmark x days with no presence
+ *   Shortfall= sum over present days of max(0, benchmark - metric)
+ *   Extra    = sum over present days of max(0, metric - benchmark)
+ *   Achieved = sum of the metric on present days = Ideal - Absence - Shortfall + Extra
+ *   Deviation= Achieved - Ideal (negative = work not done)
+ */
+export interface CapacityBreakdown {
+  name: string; people: number; ideal: number; absence: number; shortfall: number; extra: number; achieved: number; deviation: number;
+  absenceByReason: Record<string, number>;
+}
+export function capacityBreakdown(sc: Scope, cap: CapacityConfig, key: GroupKey | null = null): CapacityBreakdown[] {
+  const b = cap.benchmark;
+  const field = cap.metric === 'online' ? 'onlineSec' : cap.metric === 'active' ? 'activeSec' : 'productiveSec';
+  const groups = new Map<string, CapacityBreakdown & { ids: Set<string> }>();
+  for (const d of sc.daily) {
+    const e = sc.empById.get(d.employeeId); if (!e) continue;
+    const k = key === 'person' ? e.name : key ? e[key] : 'All';
+    const g = groups.get(k) ?? { name: k, people: 0, ideal: 0, absence: 0, shortfall: 0, extra: 0, achieved: 0, deviation: 0, absenceByReason: {}, ids: new Set<string>() };
+    g.ids.add(d.employeeId);
+    g.ideal += b;
+    if (d.present) {
+      const v = H(d[field]);
+      g.achieved += v;
+      g.shortfall += Math.max(0, b - v);
+      g.extra += Math.max(0, v - b);
+    } else {
+      g.absence += b;
+      const reason = d.absenceReason || 'No presence signal';
+      g.absenceByReason[reason] = (g.absenceByReason[reason] ?? 0) + b;
+    }
+    groups.set(k, g);
+  }
+  return [...groups.values()].map(({ ids, ...g }) => ({ ...g, people: ids.size, deviation: g.achieved - g.ideal }));
+}
 export interface CapacityRow {
   name: string; people: number; presentDays: number;
   /** average hours per present day */

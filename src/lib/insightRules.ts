@@ -7,7 +7,7 @@
  * `pages` decides where a rule is shown; Overview shows only 'priority'.
  * ===================================================================== */
 import type { CapacityConfig, Dataset, Insight } from '../types';
-import { fmtDate, fmtH, fmtN, fmtPct, H, topItems, usageTotals, type PersonStat, type Scope } from './metrics';
+import { capacityBand, fmtDate, fmtH, fmtN, fmtPct, H, topItems, usageTotals, type PersonStat, type Scope } from './metrics';
 
 const plural = (n: number, one: string, many = `${one}s`) => `${fmtN(n)} ${n === 1 ? one : many}`;
 const listJoin = (xs: string[], word: string) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} ${word} ${xs[xs.length - 1]}`);
@@ -63,8 +63,7 @@ export function computeInsightRules(ds: Dataset, sc: Scope, stats: PersonStat[],
   const out: Insight[] = [];
 
   // capacity band (shared with the Time & Capacity tab)
-  const min = cap.benchmark * (1 - cap.variancePct / 100);
-  const max = cap.benchmark * (1 + cap.variancePct / 100);
+  const { min, max } = capacityBand(cap);
   const band = (v: number) => (v < min ? 'under' : v > max ? 'over' : 'healthy');
   const split = { under: 0, healthy: 0, over: 0 };
   present.forEach((p) => split[band(p.avg[cap.metric])]++);
@@ -75,18 +74,20 @@ export function computeInsightRules(ds: Dataset, sc: Scope, stats: PersonStat[],
   /* ============================== ACT NOW ============================== */
 
   // 1. apps / URLs that need category mapping, used > N h per working day
-  const unprod = topItems(sc, { productivity: 'unproductive', n: 200 });
-  const toMap = unprod.filter((u) =>
-    (u.category === 'Uncategorised' || (!cfg.nonWorkCategories.includes(u.category) && u.people >= 3 && !/news|msn/i.test(u.category + u.name)))
-    && u.hours / wd > r.mappingHrsPerDay);
+  const items = topItems(sc, { n: 500 });
+  const toMap = items.filter((u) =>
+    (u.category === 'Uncategorised'   // never mapped (defaults to Neutral)
+      || (u.productivity === 'unproductive' && !cfg.nonWorkCategories.includes(u.category) && u.people >= 3 && !/news|msn/i.test(u.category + u.name)))
+    && u.hours / wd > r.mappingHrsPerDay)
+    .sort((a, b) => b.hours - a.hours);
   if (toMap.length) {
     const total = toMap.reduce((a, u) => a + u.hours, 0);
     out.push({
       id: 'act.mapping', tone: 'priority', pages: ['overview', 'apps'],
       title: `${plural(toMap.length, 'app/URL', 'apps/URLs')} need category mapping`,
-      body: `Each takes more than ${r.mappingHrsPerDay}h a day across the team: ${toMap.slice(0, 3).map((u) => `${u.name} (${fmtN(u.hours)}h)`).join(', ')}${toMap.length > 3 ? ' and more' : ''}. Total until ${until}.`,
+      body: `Each takes more than ${r.mappingHrsPerDay}h a day across the team: ${toMap.slice(0, 3).map((u) => `${u.name} (${fmtN(u.hours)}h)`).join(', ')}${toMap.length > 3 ? ' and more' : ''}. Uncategorised items count as neutral until mapped. Total until ${until}.`,
       metric: { value: `${fmtN(total)}h`, label: 'spent so far' },
-      link: { page: 'apps', anchor: 'urls' },
+      link: { page: 'apps', anchor: 'top' },
     });
   }
 

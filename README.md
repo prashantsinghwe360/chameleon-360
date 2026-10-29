@@ -35,8 +35,9 @@ The team filter (all teams or one team; with one team selected every department-
 ```
 data/
   README.md             CSV formats and how to add a client
-  demo-client/          employees.csv, daily_activity.csv, app_usage.csv, client_config.json
-scripts/                demo-data generator (npm run data:demo)
+  we360-sample/         default client, converted from source/We360_Sample_Workforce_Data_v2.xlsx
+  demo-client/          deck-calibrated demo (open with ?client=demo-client)
+scripts/                import_workbook.py (xlsx → client folder), demo-data generator (npm run data:demo)
 src/
   types.ts              Data contract (Employee, DailyRecord, AppUsageRecord, ClientConfig)
   data/loadDataset.ts   Picks the client folder, parses the CSVs, merges client_config.json with defaults

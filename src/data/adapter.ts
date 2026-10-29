@@ -10,14 +10,14 @@ type Row = Record<string, string>;
 
 /** Header names per file. Edit here to map another export format. */
 export const COLUMNS = {
-  employees: { id: 'Employee ID', name: 'Name', department: 'Department', team: 'Team', designation: 'Designation', joinDate: 'Joining Date', excluded: 'Excluded' },
-  daily: { id: 'Employee ID', date: 'Date', present: 'Present', online: 'Online Time', active: 'Active Time', productive: 'Productive Time', neutral: 'Neutral Time', unproductive: 'Unproductive Time', span: 'Punch Span' },
+  employees: { id: 'Employee ID', name: 'Name', department: 'Department', team: 'Team', designation: 'Designation', location: 'Location', joinDate: 'Joining Date', excluded: 'Excluded' },
+  daily: { id: 'Employee ID', date: 'Date', present: 'Present', reason: 'Absence Reason', online: 'Online Time', active: 'Active Time', productive: 'Productive Time', neutral: 'Neutral Time', unproductive: 'Unproductive Time', span: 'Punch Span' },
   usage: { id: 'Employee ID', date: 'Date', name: 'App/URL', type: 'Type', productivity: 'Productivity', category: 'Category', active: 'Active Time' },
 } as const;
 
 /** Required columns per file - loading fails with a clear message if one is missing. */
 const REQUIRED = {
-  employees: ['id', 'name', 'department'],
+  employees: ['id', 'name'],
   daily: ['id', 'date', 'online', 'active', 'productive'],
   usage: ['id', 'date', 'name', 'productivity', 'active'],
 } as const;
@@ -52,15 +52,22 @@ export function buildDataset(config: ClientConfig, employeeRows: Row[], ledgerRo
   check('employees', employeeRows); check('daily', ledgerRows); check('usage', usageRows);
   const E = COLUMNS.employees, D = COLUMNS.daily, U = COLUMNS.usage;
 
-  const employees: Employee[] = employeeRows.map((r) => ({
+  const teamsOnly = config.orgLevel === 'team';
+  if (!teamsOnly && !(E.department in employeeRows[0])) throw new DatasetError(`employees: missing column "${E.department}" (or set "orgLevel": "team" in client_config.json).`);
+  const employees: Employee[] = employeeRows.map((r) => {
+    const team = r[E.team] || r[E.department] || 'Unassigned';
+    return {
     id: r[E.id],
     name: r[E.name],
-    department: r[E.department] || config.unassignedDepartment || 'Unassigned',
-    team: r[E.team] || r[E.department] || 'Unassigned',
+    // teams-only clients: the team is the grouping level everywhere
+    department: teamsOnly ? team : r[E.department] || config.unassignedDepartment || 'Unassigned',
+    team,
     designation: r[E.designation] || undefined,
+    location: r[E.location] || undefined,
     joinDate: r[E.joinDate] ? toIsoDate(r[E.joinDate]) : undefined,
     excluded: E.excluded in r ? yes(r[E.excluded]) : /test|admin/i.test(r[E.name] ?? ''),
-  }));
+  };
+  });
 
   const daily: DailyRecord[] = ledgerRows.map((r) => {
     const onlineSec = toSec(r[D.online]);
@@ -75,6 +82,7 @@ export function buildDataset(config: ClientConfig, employeeRows: Row[], ledgerRo
       neutralSec: toSec(r[D.neutral]),
       unproductiveSec: toSec(r[D.unproductive]),
       spanSec: toSec(r[D.span]) || undefined,
+      absenceReason: r[D.reason] || undefined,
     };
   });
 
