@@ -2,7 +2,7 @@
 // An explicit config means `npx wrangler deploy` skips framework auto-setup.
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "chameleon-360",
+  "name": "dash",
   "compatibility_date": "2025-09-01",
   "assets": {
     "directory": "./dist",
