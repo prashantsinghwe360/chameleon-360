@@ -10,6 +10,8 @@ import { family, wellness } from '../theme/tokens';
 import type { MetricKey } from '../types';
 
 const STRIPE_ID = 'cap-break-stripe';
+/** 'Where the working day goes' is hidden from the page for now; set to true to show it again. */
+const SHOW_WORKING_DAY = false;
 type Status = 'under' | 'healthy' | 'over';
 const STATUS_LABEL: Record<Status, string> = { under: 'Underutilised', healthy: 'Healthy', over: 'Overburdened' };
 const STATUS_COLOR: Record<Status, string> = { under: wellness.underutilised, healthy: wellness.healthy, over: wellness.overburdened };
@@ -37,8 +39,6 @@ export function CapacityPage() {
   const setBenchmark = (v: number) => setCapacityCfg({ ...capacityCfg, benchmark: v, min: +(min * v / benchmark).toFixed(2), max: +(max * v / benchmark).toFixed(2) });
   // ± variance sets a symmetric band; min / max can also be typed directly
   const setVariance = (v: number) => setCapacityCfg({ ...capacityCfg, variancePct: v, min: +(benchmark * (1 - v / 100)).toFixed(2), max: +(benchmark * (1 + v / 100)).toFixed(2) });
-  const setMin = (v: number) => setCapacityCfg({ ...capacityCfg, min: Math.min(v, max) });
-  const setMax = (v: number) => setCapacityCfg({ ...capacityCfg, max: Math.max(v, min) });
   const wd = scope.range.workingDays;
   const headcount = scope.employees.length;
   const status = (v: number): Status => (v < min ? 'under' : v > max ? 'over' : 'healthy');
@@ -52,11 +52,6 @@ export function CapacityPage() {
 
   // people by status on their own average per present day
   const counted = useMemo(() => stats.filter((p) => p.presentDays > 0), [stats]);
-  const split = useMemo(() => {
-    const c: Record<Status, number> = { under: 0, healthy: 0, over: 0 };
-    counted.forEach((p) => c[status(p.avg[metric])]++);
-    return c;
-  }, [counted, metric, min, max]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* ------------------------------ departments ------------------------------ */
   const depts = useMemo(() => {
@@ -125,10 +120,7 @@ export function CapacityPage() {
       <NumberField label="Benchmark hours per day" value={benchmark} step={0.5} min={1} suffix="h/day" onChange={(v) => setBenchmark(Math.max(0.5, v))} />
       <span>±</span>
       <NumberField label="Variance percent" value={variance} step={1} min={0} suffix="%" onChange={(v) => setVariance(Math.max(0, Math.min(90, v)))} />
-      <span className="bench-range">Healthy</span>
-      <NumberField label="Healthy band minimum" value={min} step={0.25} min={0} suffix="h" onChange={setMin} />
-      <span>–</span>
-      <NumberField label="Healthy band maximum" value={max} step={0.25} min={0} suffix="h" onChange={setMax} />
+      <span className="bench-range">Healthy {min}h – {max}h</span>
     </div>
   );
 
@@ -205,7 +197,6 @@ export function CapacityPage() {
   /* ------------------------------ insights ------------------------------ */
   const insights = rulesFor('capacity');
 
-  const totalPeople = Math.max(1, counted.length);
   return (
     <>
       <PageHeader title="Time & Capacity" lede="How much of the workforce's capacity is used against a daily benchmark, and how the working day is spent." />
@@ -218,22 +209,8 @@ export function CapacityPage() {
         )}
 
         {org && (
-          <Section id="lens" title="Capacity lens" tools={controls} onOpen={() => openDetail('breakdown', 'lens')}
-            note={`Net hours for the period, the people they equal at the ${benchmark}h benchmark, and where the gap comes from. Directional, not a staffing recommendation.`}>
+          <Section id="lens" title="Capacity lens" tools={controls} onOpen={() => openDetail('breakdown', 'lens')}>
             <CapacityLensView b={org} benchmark={benchmark} workingDays={wd} headcount={headcount} status={status} />
-            <div className="status-split">
-              <span className="presence-title">{fmtN(counted.length)} people by their average {label} hours per present day</span>
-              <div className="status-bar" role="img" aria-label={`${split.under} underutilised, ${split.healthy} healthy, ${split.over} overburdened`}>
-                {(['under', 'healthy', 'over'] as Status[]).map((st) => split[st] > 0 && (
-                  <i key={st} style={{ width: `${(split[st] / totalPeople) * 100}%`, background: STATUS_COLOR[st] }} />
-                ))}
-              </div>
-              <div className="status-legend">
-                <span><b style={{ color: STATUS_COLOR.under }}>{fmtN(split.under)}</b> underutilised · below {min}h</span>
-                <span><b style={{ color: STATUS_COLOR.healthy }}>{fmtN(split.healthy)}</b> healthy · {min}–{max}h</span>
-                <span><b style={{ color: STATUS_COLOR.over }}>{fmtN(split.over)}</b> overburdened · above {max}h</span>
-              </div>
-            </div>
           </Section>
         )}
 
@@ -244,7 +221,7 @@ export function CapacityPage() {
             pickable={teamClicks} onPick={(n) => drill(n, 'depts')} />
         </Section>
 
-        {all && (
+        {SHOW_WORKING_DAY && all && (
           <Section id="day" title="Where the working day goes"
             note={`Average hours per present day. The dashed teal line is the ${benchmark}h benchmark. Working (punched in) = online + break / offline; online = active + idle; active = productive + the rest.`}>
             <div className="stat-row">

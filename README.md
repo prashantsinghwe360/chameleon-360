@@ -14,6 +14,8 @@ npm run data:demo  # regenerate data/demo-client/ (only needed for the demo)
 
 ## Deploy (Cloudflare Workers)
 
+Live at **https://dash.we360.workers.dev/** (Worker `dash` on the `we360` workers.dev subdomain).
+
 `wrangler.jsonc` serves the built `dist/` folder as static assets, so Cloudflare's build runs:
 
 - Build command: `npm run build`

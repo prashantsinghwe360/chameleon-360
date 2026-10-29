@@ -307,7 +307,11 @@ export function AIPage() {
           {toolsChart(Math.max(240, ai.byTool.length * 26))}
         </Section>
 
-        <Section id="nonai" title="People with no AI use"
+
+        <Section id="trend" title="Monthly AI-tool usage" onOpen={() => openDetail('trend', 'trend')} note="* marks a month only partly inside the selected period.">
+          {trendChart(280)}
+        </Section>
+        <Section id="nonai" span={6} title="People with no AI use"
           note={`${fmtN(nonAi.length)} of ${fmtN(ai.people)} people show no AI-assistant use in this period. Listed: the ${fmtN(nonAiList.length)} with ${cfg.minPresentDaysForLists}+ present days, lowest active time first.`}>
           <DataTable rows={nonAiList} max={10} initialSort={{ key: 'v', dir: 'asc' }} cols={[
             { key: 'name', label: 'Name', get: (r) => r.emp.name },
@@ -318,10 +322,7 @@ export function AIPage() {
           ]} />
         </Section>
 
-        <Section id="trend" title="Monthly AI-tool usage" onOpen={() => openDetail('trend', 'trend')} note="* marks a month only partly inside the selected period.">
-          {trendChart(280)}
-        </Section>
-        <Section id="power" title="AI power users" onOpen={() => openDetail('power', 'power')}
+        <Section id="power" span={6} title="AI power users" onOpen={() => openDetail('power', 'power')}
           tools={<>{avgFilter}<span className="ctl-label">Show top</span><NumberField label="Number of power users" value={powerN} step={1} min={1} onChange={(v) => setPowerN(Math.max(1, Math.round(v)))} /></>}
           note={`Total AI-assistant hours in the period. ${filterNote} Hover a bar for ${org.d} and tools used; click it to open that person.`}>
           {powerChart(power)}

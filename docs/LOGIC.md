@@ -260,7 +260,7 @@ The leaderboard can group by department or by team; in per-person mode it ranks 
 
 ```
 Healthy band:  explicit min / max when configured, else min = B × (1 − v), max = B × (1 + v)
-               (the ± variance control sets a symmetric band; min and max can also be typed directly)
+               (on the page only ± variance is editable; it sets min = B × (1 − v) and max = B × (1 + v))
 
 Status (per person or group, on its own average per present day):
   value < min        → Underutilised   (coral)
@@ -299,7 +299,7 @@ Achieved                 = Ideal − Absence − Shortfall + Extra
 - **Tab (capacity lens):** *Net Achieved Capacity* vs *Net Ideal Capacity* as one bar (colour = the status of the average per
   working day), the gap in hours, % and people, then **Why the gap**: absence, shortfall and extra hours as bars, each with its
   person-days at the benchmark (hours ÷ B), and a one-line *What it tells* reading (absence-led, shortfall-led, mixed, or
-  stretched when extra exceeds the gaps; with the top absence reasons). The people-by-status bar sits under it.
+  stretched when extra exceeds the gaps; with the top absence reasons).
 - **Equivalent headcount:**
 
 ```
@@ -338,7 +338,9 @@ leader lines. Hover for value, status and headcount; click a team dot to open it
 | Actual hrs | avg / day × present person-days |
 | Capacity used | Actual ÷ Ideal × 100 |
 
-#### Where the working day goes
+#### Where the working day goes (hidden)
+
+Currently switched off on the page (`SHOW_WORKING_DAY` in `pages/Capacity.tsx`).
 
 One stacked bar of the average present day:
 
